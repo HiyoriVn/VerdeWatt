@@ -1,0 +1,26 @@
+[
+    {
+        "id": "EV_001",
+        "current_soc": 25,
+        "target_soc": 80,
+        "battery_kwh": 60,
+        "deadline_hour": 7,
+        "priority": "urgent"
+    },
+    {
+        "id": "EV_002",
+        "current_soc": 45,
+        "target_soc": 75,
+        "battery_kwh": 55,
+        "deadline_hour": 10,
+        "priority": "normal"
+    },
+    {
+        "id": "EV_003",
+        "current_soc": 60,
+        "target_soc": 90,
+        "battery_kwh": 70,
+        "deadline_hour": 14,
+        "priority": "flexible"
+    }
+]
