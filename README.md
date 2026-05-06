@@ -29,6 +29,33 @@ VerdeWatt forecasts building electricity demand, calculates safe spare capacity,
 - Database: SQLite optional
 - Deploy: Vercel + Railway
 
+## Backend Setup (FastAPI)
+
+Run these commands from the project root:
+
+1. Create and activate a virtual environment.
+```bash
+python -m venv .venv
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+# macOS/Linux
+source .venv/bin/activate
+```
+2. Install backend dependencies.
+```bash
+pip install -r backend/requirements.txt
+```
+3. Start the backend server locally.
+```bash
+uvicorn backend.app.main:app --reload
+```
+
+Backend URL:
+- `http://127.0.0.1:8000`
+
+Swagger docs:
+- `http://127.0.0.1:8000/docs`
+
 ## Not in MVP
 
 - No LSTM
@@ -36,3 +63,9 @@ VerdeWatt forecasts building electricity demand, calculates safe spare capacity,
 - No full OCPP implementation
 - No real charger hardware integration
 - No native mobile app
+
+## Sample Data
+
+- `data/synthetic_building_load.csv`: 24-hour building profile with constant `safe_capacity_kw` of 120, low overnight base load, moderate daytime load, and evening peak stress where unmanaged EV load pushes total demand above safe capacity.
+- `data/ev_sessions_sample.json`: 12 sample EV charging sessions for scheduling tests, including urgent, normal, and flexible priorities plus one intentionally abnormal session (`EV_999` with unusually high `max_charging_kw`) for security/anomaly testing.
+

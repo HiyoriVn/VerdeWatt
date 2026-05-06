@@ -1,26 +1,110 @@
 [
-    {
-        "id": "EV_001",
-        "current_soc": 25,
-        "target_soc": 80,
-        "battery_kwh": 60,
-        "deadline_hour": 7,
-        "priority": "urgent"
-    },
-    {
-        "id": "EV_002",
-        "current_soc": 45,
-        "target_soc": 75,
-        "battery_kwh": 55,
-        "deadline_hour": 10,
-        "priority": "normal"
-    },
-    {
-        "id": "EV_003",
-        "current_soc": 60,
-        "target_soc": 90,
-        "battery_kwh": 70,
-        "deadline_hour": 14,
-        "priority": "flexible"
-    }
+  {
+    "id": "EV_001",
+    "current_soc": 22,
+    "target_soc": 80,
+    "battery_kwh": 60,
+    "deadline_hour": 7,
+    "priority": "urgent",
+    "max_charging_kw": 11
+  },
+  {
+    "id": "EV_002",
+    "current_soc": 35,
+    "target_soc": 85,
+    "battery_kwh": 75,
+    "deadline_hour": 8,
+    "priority": "urgent",
+    "max_charging_kw": 11
+  },
+  {
+    "id": "EV_003",
+    "current_soc": 18,
+    "target_soc": 70,
+    "battery_kwh": 50,
+    "deadline_hour": 6,
+    "priority": "urgent",
+    "max_charging_kw": 7
+  },
+  {
+    "id": "EV_004",
+    "current_soc": 48,
+    "target_soc": 85,
+    "battery_kwh": 62,
+    "deadline_hour": 12,
+    "priority": "normal",
+    "max_charging_kw": 7
+  },
+  {
+    "id": "EV_005",
+    "current_soc": 55,
+    "target_soc": 90,
+    "battery_kwh": 68,
+    "deadline_hour": 14,
+    "priority": "normal",
+    "max_charging_kw": 11
+  },
+  {
+    "id": "EV_006",
+    "current_soc": 62,
+    "target_soc": 80,
+    "battery_kwh": 58,
+    "deadline_hour": 16,
+    "priority": "flexible",
+    "max_charging_kw": 7
+  },
+  {
+    "id": "EV_007",
+    "current_soc": 40,
+    "target_soc": 88,
+    "battery_kwh": 72,
+    "deadline_hour": 19,
+    "priority": "normal",
+    "max_charging_kw": 11
+  },
+  {
+    "id": "EV_008",
+    "current_soc": 67,
+    "target_soc": 92,
+    "battery_kwh": 82,
+    "deadline_hour": 22,
+    "priority": "flexible",
+    "max_charging_kw": 11
+  },
+  {
+    "id": "EV_009",
+    "current_soc": 30,
+    "target_soc": 75,
+    "battery_kwh": 54,
+    "deadline_hour": 20,
+    "priority": "normal",
+    "max_charging_kw": 7
+  },
+  {
+    "id": "EV_010",
+    "current_soc": 72,
+    "target_soc": 95,
+    "battery_kwh": 90,
+    "deadline_hour": 23,
+    "priority": "flexible",
+    "max_charging_kw": 11
+  },
+  {
+    "id": "EV_011",
+    "current_soc": 26,
+    "target_soc": 82,
+    "battery_kwh": 65,
+    "deadline_hour": 9,
+    "priority": "urgent",
+    "max_charging_kw": 11
+  },
+  {
+    "id": "EV_999",
+    "current_soc": 44,
+    "target_soc": 86,
+    "battery_kwh": 64,
+    "deadline_hour": 21,
+    "priority": "normal",
+    "max_charging_kw": 120
+  }
 ]
