@@ -31,29 +31,37 @@ VerdeWatt forecasts building electricity demand, calculates safe spare capacity,
 
 ## Backend Setup (FastAPI)
 
-Run these commands from the project root:
+This backend is Python FastAPI only (not a Node.js backend).
 
-1. Create and activate a virtual environment.
+Run these commands from the project root on a machine with Python installed:
+
+1. Create a virtual environment.
 ```bash
 python -m venv .venv
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-# macOS/Linux
+```
+2. Activate the virtual environment.
+Windows:
+```bash
+source .venv/Scripts/activate
+```
+macOS/Linux:
+```bash
 source .venv/bin/activate
 ```
-2. Install backend dependencies.
+3. Install backend dependencies.
 ```bash
 pip install -r backend/requirements.txt
 ```
-3. Start the backend server locally.
+4. Start the backend server locally.
 ```bash
 uvicorn backend.app.main:app --reload
 ```
 
-Backend URL:
-- `http://127.0.0.1:8000`
-
-Swagger docs:
+Expected local URLs:
+- `http://127.0.0.1:8000/health`
+- `http://127.0.0.1:8000/api/load`
+- `http://127.0.0.1:8000/api/sessions`
+- `http://127.0.0.1:8000/api/allocate`
 - `http://127.0.0.1:8000/docs`
 
 ## Not in MVP
