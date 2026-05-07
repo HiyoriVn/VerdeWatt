@@ -1,16 +1,19 @@
 # VerdeWatt Charging Algorithm (MVP)
 
-## 1. Goal
+## 1. What problem the optimizer solves
 
-The optimizer decides how much charging power to give each EV every hour so the building stays safe.
+The optimizer decides how much charging power to give each EV every hour so the
+building stays within its safe electrical capacity while still serving EVs by
+priority and deadline.
 
-Main safety rule:
+Safety rule:
 
 `base_load_kw + total_ev_charging_kw <= safe_capacity_kw`
 
-This means EV charging should use only the spare electrical capacity left after normal building usage.
+In other words, EV charging should only use the spare capacity left after
+normal building usage.
 
-## 2. Input Files
+## 2. Input files used
 
 The algorithm reads two files:
 
@@ -19,10 +22,11 @@ The algorithm reads two files:
 - `data/ev_sessions_sample.json`
   - EV charging requests (`id`, `current_soc`, `target_soc`, `battery_kwh`, `deadline_hour`, `priority`, `max_charging_kw`)
 
-## 3. Key Variables
+## 3. Key variables
 
 - `base_load_kw`: Building electricity use (non-EV load) in a given hour.
 - `safe_capacity_kw`: Maximum safe building load in that hour.
+- `unmanaged_ev_load_kw`: EV load if everyone charged without control.
 - `spare_capacity_kw`: Capacity available for EV charging in that hour.
   - Formula: `spare_capacity_kw = safe_capacity_kw - base_load_kw`
 - `current_soc`: Current battery state of charge (%).
@@ -30,33 +34,23 @@ The algorithm reads two files:
 - `battery_kwh`: Battery size in kWh.
 - `deadline_hour`: Latest hour by which the EV wants charging (inclusive in this MVP).
 - `priority`: Charging importance level (`urgent`, `normal`, `flexible`).
+- `max_charging_kw`: Maximum charging power allowed for that EV.
 
-The algorithm also computes:
+The optimizer also computes:
 
 - `required_kwh = battery_kwh * (target_soc - current_soc) / 100`
 - `remaining_kwh`: Energy still needed after each hour of charging.
 
-## 4. Why We Do Not Use LSTM in the MVP
-
-This MVP uses a rule-based method instead of LSTM (or any deep learning) for practical reasons:
-
-- Faster to build during a hackathon.
-- Easier to explain and debug for judges and teammates.
-- No need for large historical datasets or model training.
-- Behavior is predictable, which is useful for safety-focused systems.
-
-For an MVP, clear and reliable logic is more important than advanced forecasting complexity.
-
-## 5. Step-by-Step Algorithm
+## 4. Step-by-step algorithm
 
 1. Load hourly building data and EV sessions from CSV/JSON.
 2. For each EV, compute `required_kwh` and set `remaining_kwh = required_kwh`.
-3. Process hours from `0` to `23`.
-4. For each hour, compute:
+3. Process hours in order (0 to 23).
+4. For each hour, compute spare capacity:
    - `spare_capacity_kw = max(0, safe_capacity_kw - base_load_kw)`
 5. Build a list of eligible EVs:
    - EV still needs energy (`remaining_kwh > 0`)
-   - Current hour is not past deadline (`hour <= deadline_hour`)
+   - Current hour is not past the EV deadline (`hour <= deadline_hour`)
 6. Sort eligible EVs using a greedy priority queue:
    - First by `priority` (`urgent` before `normal` before `flexible`)
    - Then by earliest `deadline_hour`
@@ -68,41 +62,49 @@ For an MVP, clear and reliable logic is more important than advanced forecasting
    - `total_load_kw = base_load_kw + total_allocated_kw_this_hour`
 9. After all hours, calculate peak and service metrics.
 
-This is called a greedy approach because it always gives available power first to the highest-priority and earliest-deadline EVs at each hour.
+This is called a greedy approach because it always gives available power first
+to the highest-priority and earliest-deadline EVs at each hour.
 
-## 6. Output Metrics
+## 5. Why the MVP uses weighted moving average and greedy priority queue instead of LSTM
 
-The optimizer returns a dictionary with:
+The MVP focuses on simple, explainable logic that works with small amounts of
+data and can be demoed reliably:
 
-- `hourly_allocations`: List of charging decisions per hour and EV (`hour`, `ev_id`, `allocated_kw`).
-- `total_load_after_optimization`: Hourly building load after controlled EV charging.
-- `peak_before_kw`: Highest load in unmanaged scenario (`base_load_kw + unmanaged_ev_load_kw`).
+- **Weighted moving average** is used for load forecasting because it is easy
+  to understand, quick to compute, and does not require training data.
+- **Greedy priority queue** is used for allocation because it gives clear,
+  predictable decisions based on priority and deadlines.
+- **LSTM** would require more data, training time, and debugging effort than a
+  hackathon MVP can afford, and its decisions are harder to explain.
+
+## 6. Output metrics
+
+The optimizer returns these metrics:
+
+- `peak_before_kw`: Highest unmanaged load (`base_load_kw + unmanaged_ev_load_kw`).
 - `peak_after_kw`: Highest load after optimization.
 - `peak_reduction_kw`: `peak_before_kw - peak_after_kw`.
 - `peak_reduction_percent`: Percentage peak reduction.
 - `evs_fully_served`: EV IDs that reached full required energy.
 - `evs_partially_served`: EV IDs that still have remaining energy demand.
+- `peak_after_under_safe_capacity_kw`: True if optimized load never exceeds safe capacity.
 
-## 7. Example With One EV Session
+## 7. How to run
 
-Example EV:
+From the project root:
 
-- `id`: `EV_001`
-- `current_soc`: `22`
-- `target_soc`: `80`
-- `battery_kwh`: `60`
-- `priority`: `urgent`
-- `deadline_hour`: `7`
-- `max_charging_kw`: `11`
+```bash
+python ai/optimizer.py
+```
 
-Step 1: Compute required energy:
+## 8. How to interpret the CLI output
 
-`required_kwh = 60 * (80 - 22) / 100 = 34.8 kWh`
+The CLI prints a validation summary with these fields:
 
-Step 2: During each hour up to `07:00`, this EV can receive at most:
-
-- `11 kW` (its charger limit)
-- remaining energy it still needs
-- remaining building spare capacity in that hour
-
-So if there is enough spare capacity for several hours, `EV_001` will likely be fully served before its deadline. If spare capacity is tight, it may be only partially served, and that will appear in `evs_partially_served`.
+- `peak_before_kw`: The worst-case load if EVs charge without control.
+- `peak_after_kw`: The highest load after optimization.
+- `peak_reduction_kw`: How many kW were reduced at the peak.
+- `peak_reduction_percent`: Percent reduction at the peak.
+- `evs_fully_served`: EV IDs that finished charging.
+- `evs_partially_served`: EV IDs that still need energy.
+- `peak_after_under_safe_capacity_kw`: `yes` means every hour stayed under the safe limit.

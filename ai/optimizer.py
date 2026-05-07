@@ -6,6 +6,7 @@ load stays within safe capacity.
 
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 from pathlib import Path
@@ -150,6 +151,17 @@ def optimize_charging(
     ]
     after_loads = [row["total_load_kw"] for row in total_load_after_optimization]
 
+    # Check that optimized load never exceeds safe capacity for each hour.
+    safe_capacity_by_hour = {
+        row["hour"]: row["safe_capacity_kw"] for row in building_load
+    }
+    peak_after_under_safe_capacity_kw = True
+    for row in total_load_after_optimization:
+        safe_capacity_kw = safe_capacity_by_hour.get(row["hour"], 0.0)
+        if row["total_load_kw"] > safe_capacity_kw + 1e-6:
+            peak_after_under_safe_capacity_kw = False
+            break
+
     peak_before_kw = max(before_loads) if before_loads else 0.0
     peak_after_kw = max(after_loads) if after_loads else 0.0
     peak_reduction_kw = peak_before_kw - peak_after_kw
@@ -175,6 +187,7 @@ def optimize_charging(
         "peak_reduction_percent": round(peak_reduction_percent, 2),
         "evs_fully_served": evs_fully_served,
         "evs_partially_served": evs_partially_served,
+        "peak_after_under_safe_capacity_kw": peak_after_under_safe_capacity_kw,
     }
 
 
@@ -193,35 +206,50 @@ def run_optimizer(
     return optimize_charging(building_load, ev_sessions)
 
 
-def print_summary(result: Dict[str, Any]) -> None:
-    """Print a beginner-friendly CLI summary."""
-    print("VerdeWatt Optimizer Summary")
-    print("=" * 28)
-    print(f"Peak before optimization: {result['peak_before_kw']:.2f} kW")
-    print(f"Peak after optimization:  {result['peak_after_kw']:.2f} kW")
-    print(f"Peak reduction:           {result['peak_reduction_kw']:.2f} kW")
-    print(f"Peak reduction percent:   {result['peak_reduction_percent']:.2f}%")
-    print()
+def print_summary(result: Dict[str, Any], show_allocations: bool = False) -> None:
+    """Print a beginner-friendly CLI validation summary."""
+    print("VerdeWatt Optimizer Validation Summary")
+    print("=" * 39)
+    print(f"peak_before_kw: {result['peak_before_kw']:.2f} kW")
+    print(f"peak_after_kw: {result['peak_after_kw']:.2f} kW")
+    print(f"peak_reduction_kw: {result['peak_reduction_kw']:.2f} kW")
+    print(f"peak_reduction_percent: {result['peak_reduction_percent']:.2f}%")
 
     fully = result["evs_fully_served"]
     partial = result["evs_partially_served"]
 
-    print(f"EVs fully served ({len(fully)}): {', '.join(fully) if fully else 'None'}")
-    print(
-        f"EVs partially served ({len(partial)}): "
-        f"{', '.join(partial) if partial else 'None'}"
-    )
-    print()
+    fully_label = ", ".join(fully) if fully else "None"
+    partial_label = ", ".join(partial) if partial else "None"
 
-    print("First 15 hourly allocations (hour, ev_id, allocated_kw):")
-    for item in result["hourly_allocations"][:15]:
-        print(f"- {item['hour']:02d}:00 | {item['ev_id']} | {item['allocated_kw']:.2f} kW")
+    print(f"evs_fully_served: {fully_label}")
+    print(f"evs_partially_served: {partial_label}")
+
+    safe_label = "yes" if result["peak_after_under_safe_capacity_kw"] else "no"
+    print(f"peak_after_under_safe_capacity_kw: {safe_label}")
+
+    if show_allocations:
+        print()
+        print("First 15 hourly allocations (hour, ev_id, allocated_kw):")
+        for item in result["hourly_allocations"][:15]:
+            print(
+                f"- {item['hour']:02d}:00 | {item['ev_id']} | {item['allocated_kw']:.2f} kW"
+            )
 
 
 def main() -> None:
     """CLI entrypoint for quick local testing."""
+    parser = argparse.ArgumentParser(
+        description="Run the rule-based EV charging optimizer."
+    )
+    parser.add_argument(
+        "--show-allocations",
+        action="store_true",
+        help="Print a short list of hourly allocations.",
+    )
+    args = parser.parse_args()
+
     result = run_optimizer()
-    print_summary(result)
+    print_summary(result, show_allocations=args.show_allocations)
 
 
 if __name__ == "__main__":
