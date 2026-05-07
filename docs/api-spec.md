@@ -527,5 +527,3 @@ Recommended test order in Swagger docs:
 ```
 
 If all endpoints return valid JSON, the backend is ready for frontend integration.
-
-```
