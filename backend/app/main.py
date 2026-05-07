@@ -6,6 +6,7 @@ from backend.app.routes.alerts import router as alerts_router
 from backend.app.routes.billing import router as billing_router
 from backend.app.routes.health import router as health_router
 from backend.app.routes.load import router as load_router
+from backend.app.routes.schedule import router as schedule_router
 from backend.app.routes.sessions import router as sessions_router
 
 app = FastAPI(
@@ -34,3 +35,4 @@ app.include_router(sessions_router)
 app.include_router(allocate_router)
 app.include_router(alerts_router)
 app.include_router(billing_router)
+app.include_router(schedule_router)
