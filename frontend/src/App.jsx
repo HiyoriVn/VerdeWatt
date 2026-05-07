@@ -85,7 +85,7 @@ function App() {
         <header style={{ marginBottom: 18 }}>
           <h1 style={{ margin: 0, fontSize: 34 }}>VerdeWatt</h1>
           <p style={{ marginTop: 8, color: "#374151" }}>
-            AI-powered Smart EV Charging Dashboard (Hackathon MVP)
+            AI-powered cybersecure smart EV charging for high-rise buildings
           </p>
         </header>
 
