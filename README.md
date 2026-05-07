@@ -40,7 +40,7 @@ Run these commands from the project root on a machine with Python installed:
 python -m venv .venv
 ```
 2. Activate the virtual environment.
-Windows:
+Windows (bash):
 ```bash
 source .venv/Scripts/activate
 ```

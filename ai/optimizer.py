@@ -151,16 +151,9 @@ def optimize_charging(
     ]
     after_loads = [row["total_load_kw"] for row in total_load_after_optimization]
 
-    # Check that optimized load never exceeds safe capacity for each hour.
     safe_capacity_by_hour = {
         row["hour"]: row["safe_capacity_kw"] for row in building_load
     }
-    peak_after_under_safe_capacity_kw = True
-    for row in total_load_after_optimization:
-        safe_capacity_kw = safe_capacity_by_hour.get(row["hour"], 0.0)
-        if row["total_load_kw"] > safe_capacity_kw + 1e-6:
-            peak_after_under_safe_capacity_kw = False
-            break
 
     peak_before_kw = max(before_loads) if before_loads else 0.0
     peak_after_kw = max(after_loads) if after_loads else 0.0
@@ -168,6 +161,24 @@ def optimize_charging(
     peak_reduction_percent = (
         (peak_reduction_kw / peak_before_kw) * 100 if peak_before_kw > 0 else 0.0
     )
+
+    # Safety margin at the optimized peak hour:
+    # safe_capacity_at_peak_after_hour - peak_after_kw
+    if total_load_after_optimization:
+        peak_after_entry = max(
+            total_load_after_optimization, key=lambda x: float(x["total_load_kw"])
+        )
+        peak_after_hour = int(peak_after_entry["hour"])
+        safe_capacity_at_peak_after_hour = float(
+            safe_capacity_by_hour.get(peak_after_hour, 0.0)
+        )
+    else:
+        safe_capacity_at_peak_after_hour = 0.0
+
+    peak_after_under_safe_capacity_kw = (
+        safe_capacity_at_peak_after_hour - peak_after_kw
+    )
+    peak_after_is_safe = peak_after_under_safe_capacity_kw >= -1e-6
 
     evs_fully_served = [
         ev["id"] for ev in ev_sessions if ev["remaining_kwh"] <= 1e-6
@@ -187,7 +198,8 @@ def optimize_charging(
         "peak_reduction_percent": round(peak_reduction_percent, 2),
         "evs_fully_served": evs_fully_served,
         "evs_partially_served": evs_partially_served,
-        "peak_after_under_safe_capacity_kw": peak_after_under_safe_capacity_kw,
+        "peak_after_under_safe_capacity_kw": round(peak_after_under_safe_capacity_kw, 2),
+        "peak_after_is_safe": peak_after_is_safe,
     }
 
 
@@ -224,8 +236,14 @@ def print_summary(result: Dict[str, Any], show_allocations: bool = False) -> Non
     print(f"evs_fully_served: {fully_label}")
     print(f"evs_partially_served: {partial_label}")
 
-    safe_label = "yes" if result["peak_after_under_safe_capacity_kw"] else "no"
-    print(f"peak_after_under_safe_capacity_kw: {safe_label}")
+    print(
+        "peak_after_under_safe_capacity_kw: "
+        f"{result['peak_after_under_safe_capacity_kw']:.2f} kW"
+    )
+
+    if "peak_after_is_safe" in result:
+        safe_label = "yes" if result["peak_after_is_safe"] else "no"
+        print(f"peak_after_is_safe: {safe_label}")
 
     if show_allocations:
         print()
