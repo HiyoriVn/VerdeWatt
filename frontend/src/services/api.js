@@ -9,7 +9,15 @@ async function request(path, options = {}) {
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
+    let detail = "";
+    try {
+      const errorBody = await response.json();
+      detail = errorBody?.detail || "";
+    } catch {
+      // Ignore JSON parse errors for non-JSON responses.
+    }
+
+    throw new Error(detail || `API request failed: ${response.status}`);
   }
 
   return response.json();
@@ -39,4 +47,16 @@ export function getBilling() {
     method: "POST",
     body: JSON.stringify({}),
   });
+}
+
+export function getSchedule() {
+  return request("/api/schedule");
+}
+
+export function getVehicle(vehicleId) {
+  return request(`/api/vehicle/${encodeURIComponent(vehicleId)}`);
+}
+
+export function getChargerCommands() {
+  return request("/api/charger-commands");
 }

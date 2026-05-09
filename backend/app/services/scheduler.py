@@ -79,6 +79,17 @@ def _choose_start_hour(
     offpeak_hours = [h for h in allocated_hours if _is_offpeak(h)]
     priority = str(session.get("priority", "")).lower()
 
+    def offpeak_near_23(hours: List[int]) -> int | None:
+        """Prefer an off-peak hour around 23:00 for flexible charging."""
+        if not hours:
+            return None
+
+        def distance_to_23(hour: int) -> int:
+            # Circular clock distance on 24h format.
+            return min((hour - 23) % 24, (23 - hour) % 24)
+
+        return min(hours, key=lambda h: (distance_to_23(h), h))
+
     if preference == "fastest":
         return earliest_hour
 
@@ -86,6 +97,11 @@ def _choose_start_hour(
         # Urgent EVs should still start as early as possible when safe.
         if priority == "urgent":
             return earliest_hour
+
+        if priority == "flexible":
+            near_23 = offpeak_near_23(offpeak_hours)
+            return near_23 if near_23 is not None else earliest_hour
+
         return min(offpeak_hours) if offpeak_hours else earliest_hour
 
     # Balanced: protect urgency but still use off-peak for flexible sessions.
@@ -93,7 +109,8 @@ def _choose_start_hour(
         return earliest_hour
 
     if priority == "flexible" and offpeak_hours:
-        return min(offpeak_hours)
+        near_23 = offpeak_near_23(offpeak_hours)
+        return near_23 if near_23 is not None else earliest_hour
 
     return earliest_hour
 
@@ -231,6 +248,9 @@ def generate_schedule_recommendations(preference: str = "balanced") -> List[Dict
         recommendations.append(
             {
                 "vehicle_id": vehicle_id,
+                "current_soc": float(session.get("current_soc", 0.0)),
+                "target_soc": float(session.get("target_soc", 0.0)),
+                "priority": str(session.get("priority", "normal")).lower(),
                 "status": status,
                 "recommended_action": recommended_action,
                 "scheduled_start_hour": scheduled_start_hour,

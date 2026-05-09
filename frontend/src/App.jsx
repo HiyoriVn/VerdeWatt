@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 import AllocationSummary from "./components/AllocationSummary";
+import ChargerCommandPanel from "./components/ChargerCommandPanel";
 import EVSessionCard from "./components/EVSessionCard";
 import KPICards from "./components/KPICards";
 import LoadCurveChart from "./components/LoadCurveChart";
+import ScheduleRecommendations from "./components/ScheduleRecommendations";
 import SecurityAlertFeed from "./components/SecurityAlertFeed";
+import VehicleLookup from "./components/VehicleLookup";
 import { getAlerts, getBilling, getLoad, getSessions, runAllocation } from "./services/api";
 
 function App() {
@@ -131,6 +134,21 @@ function App() {
         <section style={sectionStyle}>
           <h2 style={{ marginTop: 0 }}>Security Alert Feed</h2>
           <SecurityAlertFeed alerts={alerts} />
+        </section>
+
+        <section style={sectionStyle}>
+          <h2 style={{ marginTop: 0 }}>Vehicle Lookup</h2>
+          <VehicleLookup />
+        </section>
+
+        <section style={sectionStyle}>
+          <h2 style={{ marginTop: 0 }}>Schedule Recommendations</h2>
+          <ScheduleRecommendations />
+        </section>
+
+        <section style={sectionStyle}>
+          <h2 style={{ marginTop: 0 }}>Charger Command Panel</h2>
+          <ChargerCommandPanel />
         </section>
       </div>
     </div>

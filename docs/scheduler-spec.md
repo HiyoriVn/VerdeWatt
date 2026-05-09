@@ -37,6 +37,9 @@ Returns a list of recommendation objects.
 Each object includes:
 
 - `vehicle_id`
+- `current_soc`
+- `target_soc`
+- `priority`
 - `status`: `charging_now` / `scheduled_offpeak` / `delayed_for_safety` / `completed` / `needs_attention`
 - `recommended_action`
 - `scheduled_start_hour`
@@ -51,6 +54,7 @@ Each object includes:
    - Urgent EVs prefer earlier safe slots.
 2. **Flexible vehicles off-peak**
    - Flexible EVs are shifted to off-peak where possible.
+   - Preferred off-peak start is around `23:00` when that slot exists.
 3. **Suspicious vehicles**
    - Sessions like `EV_999` are marked `needs_attention`.
 4. **Preference modes**
@@ -76,6 +80,9 @@ Per-EV cost and savings are estimates:
 [
   {
     "vehicle_id": "EV_001",
+    "current_soc": 22.0,
+    "target_soc": 80.0,
+    "priority": "urgent",
     "status": "charging_now",
     "recommended_action": "Charge now in the earliest safe slot to protect deadline reliability.",
     "scheduled_start_hour": 0,
@@ -86,6 +93,9 @@ Per-EV cost and savings are estimates:
   },
   {
     "vehicle_id": "EV_999",
+    "current_soc": 44.0,
+    "target_soc": 86.0,
+    "priority": "normal",
     "status": "needs_attention",
     "recommended_action": "Pause auto-charging and verify this session manually before continuing.",
     "scheduled_start_hour": null,
