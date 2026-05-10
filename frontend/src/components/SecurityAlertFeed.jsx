@@ -1,59 +1,194 @@
 import React from "react";
 
-function SecurityAlertFeed({ alerts = [] }) {
+function SecurityAlertFeed({
+  alerts = [],
+}) {
   if (!alerts.length) {
-    return <p>No active alerts right now.</p>;
+    return (
+      <div className="dashboard-card">
+        <p>
+          No active alerts right now.
+        </p>
+      </div>
+    );
   }
 
-  const severityStyle = (severity) => {
-    const level = String(severity || "").toLowerCase();
+  const severityStyle = (
+    severity
+  ) => {
+    const level = String(
+      severity || ""
+    ).toLowerCase();
+
     if (level === "high") {
-      return { label: "High", bg: "#fee2e2", color: "#b91c1c", border: "#fecaca" };
+      return {
+        label: "High",
+
+        bg: "rgba(239,68,68,0.15)",
+
+        color: "#ef4444",
+
+        border:
+          "rgba(239,68,68,0.3)",
+      };
     }
+
     if (level === "medium") {
-      return { label: "Medium", bg: "#fef3c7", color: "#b45309", border: "#fde68a" };
+      return {
+        label: "Medium",
+
+        bg: "rgba(245,158,11,0.15)",
+
+        color: "#f59e0b",
+
+        border:
+          "rgba(245,158,11,0.3)",
+      };
     }
-    return { label: "Low", bg: "#dcfce7", color: "#166534", border: "#bbf7d0" };
+
+    return {
+      label: "Low",
+
+      bg: "rgba(34,197,94,0.15)",
+
+      color: "#22c55e",
+
+      border:
+        "rgba(34,197,94,0.3)",
+    };
   };
 
   return (
-    <div style={{ display: "grid", gap: 10 }}>
+    <div
+      style={{
+        display: "grid",
+        gap: 14,
+      }}
+    >
       {alerts.map((alert) => {
-        const badge = severityStyle(alert.severity);
+        const badge =
+          severityStyle(
+            alert.severity
+          );
 
         return (
           <div
             key={alert.id}
+            className="dashboard-card"
             style={{
-              border: "1px solid #e5e7eb",
-              borderLeft: `6px solid ${badge.color}`,
-              borderRadius: 8,
-              padding: "10px 12px",
-              background: "#ffffff",
+              borderLeft: `5px solid ${badge.color}`,
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+            <div
+              style={{
+                display: "flex",
+
+                alignItems:
+                  "center",
+
+                gap: 10,
+
+                marginBottom: 12,
+
+                flexWrap: "wrap",
+              }}
+            >
               <span
                 style={{
-                  display: "inline-block",
-                  padding: "2px 8px",
+                  display:
+                    "inline-flex",
+
+                  alignItems:
+                    "center",
+
+                  justifyContent:
+                    "center",
+
+                  padding:
+                    "5px 10px",
+
                   borderRadius: 999,
+
                   fontSize: 12,
+
                   fontWeight: 700,
-                  background: badge.bg,
-                  color: badge.color,
+
+                  background:
+                    badge.bg,
+
+                  color:
+                    badge.color,
+
                   border: `1px solid ${badge.border}`,
                 }}
               >
                 {badge.label}
               </span>
-              <p style={{ margin: 0, fontWeight: 700 }}>{alert.title}</p>
+
+              <h3
+                style={{
+                  margin: 0,
+
+                  color:
+                    "var(--text)",
+                }}
+              >
+                {alert.title}
+              </h3>
             </div>
-            <p style={{ margin: "6px 0" }}>{alert.message}</p>
-            <p style={{ margin: "4px 0", fontSize: 13 }}>
-              Suggested action: {alert.suggested_action}
+
+            <p
+              style={{
+                marginTop: 0,
+
+                marginBottom: 14,
+
+                color:
+                  "var(--text-soft)",
+
+                lineHeight: 1.6,
+              }}
+            >
+              {alert.message}
             </p>
-            <p style={{ margin: "4px 0", fontSize: 12, color: "#4b5563" }}>{alert.timestamp}</p>
+
+            <div
+              style={{
+                display: "flex",
+
+                flexDirection:
+                  "column",
+
+                gap: 6,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 14,
+
+                  color:
+                    "var(--text)",
+                }}
+              >
+                <strong>
+                  Suggested action:
+                </strong>{" "}
+                {
+                  alert.suggested_action
+                }
+              </span>
+
+              <span
+                style={{
+                  fontSize: 12,
+
+                  color:
+                    "var(--text-muted)",
+                }}
+              >
+                {alert.timestamp}
+              </span>
+            </div>
           </div>
         );
       })}
