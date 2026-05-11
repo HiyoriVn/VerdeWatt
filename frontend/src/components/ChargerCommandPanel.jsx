@@ -2,18 +2,36 @@ import React, { useEffect, useState } from "react";
 
 import { getChargerCommands } from "../services/api";
 
+import {
+  BatteryCharging,
+  Zap,
+  ShieldCheck,
+} from "lucide-react";
+
 function ChargerCommandPanel() {
   const [commands, setCommands] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   useEffect(() => {
     async function loadCommands() {
       try {
-        const data = await getChargerCommands();
-        setCommands(Array.isArray(data) ? data : []);
+        const data =
+          await getChargerCommands();
+
+        setCommands(
+          Array.isArray(data)
+            ? data
+            : []
+        );
       } catch {
-        setError("Could not load charger commands right now.");
+        setError(
+          "Could not load charger commands right now."
+        );
       } finally {
         setLoading(false);
       }
@@ -23,31 +41,88 @@ function ChargerCommandPanel() {
   }, []);
 
   if (loading) {
-    return <p>Loading charger commands...</p>;
+    return (
+      <p className="muted-text">
+        Loading charger commands...
+      </p>
+    );
   }
 
   if (error) {
-    return <p style={{ color: "#b91c1c" }}>{error}</p>;
+    return (
+      <p className="error-text">
+        {error}
+      </p>
+    );
   }
 
   if (!commands.length) {
-    return <p>No charger commands available.</p>;
+    return (
+      <p className="muted-text">
+        No charger commands available.
+      </p>
+    );
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 10 }}>
+    <div className="card-grid">
       {commands.map((cmd, index) => (
         <div
           key={`${cmd.charger_id}-${cmd.related_ev_id || "none"}-${cmd.command}-${index}`}
-          style={{ border: "1px solid #dbe3ef", borderRadius: 10, background: "#fff", padding: 10 }}
+          className="dashboard-card charger-card"
         >
-          <p style={{ margin: "0 0 5px" }}><strong>Charger:</strong> {cmd.charger_id}</p>
-          <p style={{ margin: "0 0 5px" }}><strong>EV:</strong> {cmd.related_ev_id || "N/A"}</p>
-          <p style={{ margin: "0 0 5px" }}><strong>Command:</strong> {cmd.command}</p>
-          <p style={{ margin: "0 0 5px" }}>
-            <strong>Max Current (A):</strong> {cmd.max_current_amp ?? "N/A"}
-          </p>
-          <p style={{ margin: 0 }}><strong>Reason:</strong> {cmd.reason}</p>
+          <div className="charger-header">
+            <div className="charger-icon">
+              <BatteryCharging size={18} />
+            </div>
+
+            <div>
+              <h4>
+                {cmd.charger_id}
+              </h4>
+
+              <p>
+                EV:
+                {" "}
+                {cmd.related_ev_id ||
+                  "N/A"}
+              </p>
+            </div>
+          </div>
+
+          <div className="charger-details">
+            <div className="charger-row">
+              <Zap size={15} />
+
+              <span>
+                Command:
+                {" "}
+                <strong>
+                  {cmd.command}
+                </strong>
+              </span>
+            </div>
+
+            <div className="charger-row">
+              <ShieldCheck size={15} />
+
+              <span>
+                Max Current:
+                {" "}
+                <strong>
+                  {cmd.max_current_amp ??
+                    "N/A"}{" "}
+                  A
+                </strong>
+              </span>
+            </div>
+          </div>
+
+          <div className="charger-reason">
+            <p>
+              {cmd.reason}
+            </p>
+          </div>
         </div>
       ))}
     </div>
