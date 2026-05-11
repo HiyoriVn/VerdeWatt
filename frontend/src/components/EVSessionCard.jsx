@@ -17,7 +17,7 @@ function EVSessionCard({ session }) {
   return (
     <div style={cardStyle}>
       <h4 style={{ marginTop: 0, marginBottom: 8 }}>{session.id}</h4>
-      <p style={{ margin: "4px 0" }}>SOC: {session.current_soc}% -> {session.target_soc}%</p>
+      <p style={{ margin: "4px 0" }}>SOC: {session.current_soc}% to {session.target_soc}%</p>
       <p style={{ margin: "4px 0" }}>Battery: {session.battery_kwh} kWh</p>
       <p style={{ margin: "4px 0" }}>Deadline: {session.deadline_hour}:00</p>
       <p style={{ margin: "4px 0" }}>Max Charging: {session.max_charging_kw} kW</p>
