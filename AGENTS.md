@@ -118,7 +118,7 @@ The backend must run from the project root with:
 
 ```bash
 uvicorn backend.app.main:app --reload
-````
+```
 
 Do not require manual PYTHONPATH changes.
 
