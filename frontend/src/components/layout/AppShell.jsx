@@ -7,7 +7,6 @@ import {
   BatteryCharging,
   BarChart3,
   ShieldAlert,
-  Globe,
   Bell,
   UserCircle2,
   Cpu,
@@ -16,13 +15,18 @@ import {
 import { useEffect, useState } from "react";
 
 export default function AppShell({ children }) {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] =
+    useState(true);
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] =
+    useState(false);
 
   const [time, setTime] = useState(
     new Date()
   );
+
+  const [language, setLanguage] =
+    useState("English");
 
   useEffect(() => {
     document.documentElement.setAttribute(
@@ -47,7 +51,9 @@ export default function AppShell({ children }) {
     },
     {
       label: "Charging",
-      icon: <BatteryCharging size={18} />,
+      icon: (
+        <BatteryCharging size={18} />
+      ),
     },
     {
       label: "Analytics",
@@ -96,51 +102,26 @@ export default function AppShell({ children }) {
               <button
                 key={item.label}
                 className={`nav-btn ${
-                  item.active ? "active" : ""
+                  item.active
+                    ? "active"
+                    : ""
                 }`}
               >
                 {item.icon}
 
                 {!collapsed && (
-                  <span>{item.label}</span>
+                  <span>
+                    {item.label}
+                  </span>
                 )}
               </button>
             ))}
           </nav>
         </div>
 
-        {/* BOTTOM */}
+        {/* FOOTER */}
 
         <div className="sidebar-footer">
-          <button className="nav-btn">
-            <Globe size={18} />
-
-            {!collapsed && (
-              <span>EN / VI</span>
-            )}
-          </button>
-
-          <button
-            className="nav-btn"
-            onClick={() =>
-              setDarkMode(!darkMode)
-            }
-          >
-            {darkMode ? (
-              <Sun size={18} />
-            ) : (
-              <Moon size={18} />
-            )}
-
-            {!collapsed && (
-              <span>
-                {darkMode
-                  ? "Light Mode"
-                  : "Dark Mode"}
-              </span>
-            )}
-          </button>
-
           {/* USER */}
 
           <div className="user-mini-card">
@@ -159,7 +140,7 @@ export default function AppShell({ children }) {
             )}
           </div>
 
-          {/* COLLAPSE BUTTON */}
+          {/* COLLAPSE */}
 
           <button
             className="collapse-btn"
@@ -189,14 +170,96 @@ export default function AppShell({ children }) {
 
         <header className="topbar">
           <div>
-            <h2>Energy Control Center</h2>
+            <h2>
+              Energy Control Center
+            </h2>
 
             <p>
               Smart charging orchestration
             </p>
           </div>
 
+          {/* RIGHT */}
+
           <div className="topbar-right">
+            {/* LANGUAGE */}
+
+            <div className="dropdown-wrapper">
+              <button className="topbar-btn">
+                🌐
+
+                <span>
+                  {language}
+                </span>
+              </button>
+
+              <div className="dropdown-menu">
+                <button
+                  className={`dropdown-item ${
+                    language ===
+                    "English"
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    setLanguage(
+                      "English"
+                    )
+                  }
+                >
+                  🇺🇸 English
+                </button>
+
+                <button
+                  className={`dropdown-item ${
+                    language ===
+                    "Tiếng Việt"
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    setLanguage(
+                      "Tiếng Việt"
+                    )
+                  }
+                >
+                  🇻🇳 Tiếng Việt
+                </button>
+              </div>
+            </div>
+
+            {/* THEME SWITCH */}
+
+            <div className="theme-switch-wrapper">
+              <input
+                type="checkbox"
+                id="theme-toggle"
+                checked={darkMode}
+                onChange={() =>
+                  setDarkMode(!darkMode)
+                }
+              />
+
+              <label
+                htmlFor="theme-toggle"
+                className="theme-switch"
+              >
+                <Sun
+                  className="sun-icon"
+                  size={16}
+              />
+
+              <Moon
+                className="moon-icon"
+                size={16}
+              />
+
+                <span className="switch-ball"></span>
+              </label>
+            </div>
+
+            {/* SYSTEM */}
+
             <div className="system-status">
               <Cpu size={16} />
 
@@ -204,6 +267,8 @@ export default function AppShell({ children }) {
                 System Online
               </span>
             </div>
+
+            {/* TIME */}
 
             <div className="system-time">
               <strong>
@@ -215,9 +280,52 @@ export default function AppShell({ children }) {
               </p>
             </div>
 
-            <button className="icon-btn">
-              <Bell size={18} />
-            </button>
+            {/* NOTIFICATION */}
+
+            <div className="dropdown-wrapper">
+              <button className="icon-btn notification-btn">
+                <Bell size={18} />
+
+                <span className="notification-badge">
+                  3
+                </span>
+              </button>
+
+              <div className="notification-panel">
+                <div className="notification-item high">
+                  <strong>
+                    Grid overload risk
+                  </strong>
+
+                  <p>
+                    Peak load exceeded
+                    safe threshold.
+                  </p>
+                </div>
+
+                <div className="notification-item medium">
+                  <strong>
+                    Charging shifted
+                  </strong>
+
+                  <p>
+                    EV_003 moved to
+                    off-peak slot.
+                  </p>
+                </div>
+
+                <div className="notification-item low">
+                  <strong>
+                    System healthy
+                  </strong>
+
+                  <p>
+                    All charging
+                    stations operational.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </header>
 
