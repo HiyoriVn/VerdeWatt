@@ -1,11 +1,17 @@
-import React from "react";
+function formatValue(value) {
+  return Number(value ?? 0).toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  });
+}
 
 function AllocationSummary({ allocation }) {
   if (!allocation) {
     return (
-      <div className="dashboard-card">
-        <p>Allocation summary is not available yet.</p>
-      </div>
+      <section className="card glass-card">
+        <p className="muted-text">
+          Allocation summary is not available yet.
+        </p>
+      </section>
     );
   }
 
@@ -14,99 +20,62 @@ function AllocationSummary({ allocation }) {
   );
 
   const safetyLabel =
-    safetyMarginKw >= 0
-      ? "Safe"
-      : "Unsafe";
+    safetyMarginKw >= 0 ? "Safe" : "Unsafe";
+
+  const metricItems = [
+    {
+      label: "Peak Before",
+      value: allocation.peak_before_kw,
+      unit: "kW",
+      tone: "metric-red",
+    },
+    {
+      label: "Peak After",
+      value: allocation.peak_after_kw,
+      unit: "kW",
+      tone: "metric-blue",
+    },
+    {
+      label: "Peak Reduction %",
+      value: allocation.peak_reduction_percent,
+      unit: "%",
+      tone: "metric-green",
+    },
+    {
+      label: `Safety Margin (${safetyLabel})`,
+      value: safetyMarginKw,
+      unit: "kW",
+      tone:
+        safetyMarginKw >= 0
+          ? "metric-green"
+          : "metric-red",
+    },
+  ];
 
   return (
-    <div>
-      <h2
-        style={{
-          marginTop: 0,
-          marginBottom: 20,
-        }}
-      >
-        Smart Allocation Summary
-      </h2>
+    <section className="card glass-card">
+      <h2>Smart Allocation Summary</h2>
 
-      <div className="card-grid">
-        <SummaryItem
-          label="Peak Before"
-          value={allocation.peak_before_kw}
-          unit="kW"
-          accent="#ef4444"
-        />
-
-        <SummaryItem
-          label="Peak After"
-          value={allocation.peak_after_kw}
-          unit="kW"
-          accent="#3b82f6"
-        />
-
-        <SummaryItem
-          label="Peak Reduction"
-          value={allocation.peak_reduction_percent}
-          unit="%"
-          accent="#22c55e"
-        />
-
-        <SummaryItem
-          label={`Safety Margin (${safetyLabel})`}
-          value={safetyMarginKw}
-          unit="kW"
-          accent={
-            safetyMarginKw >= 0
-              ? "#22c55e"
-              : "#ef4444"
-          }
-        />
+      <div className="allocation-metric-grid">
+        {metricItems.map((metric) => (
+          <article
+            key={metric.label}
+            className={`allocation-metric-card ${metric.tone}`}
+          >
+            <p>{metric.label}</p>
+            <strong>
+              {formatValue(metric.value)} {metric.unit}
+            </strong>
+          </article>
+        ))}
       </div>
-    </div>
-  );
-}
 
-function SummaryItem({
-  label,
-  value,
-  unit,
-  accent,
-}) {
-  const numericValue = Number(value ?? 0);
-
-  return (
-    <div className="dashboard-card">
-      <p
-        style={{
-          margin: 0,
-
-          fontSize: 13,
-
-          color: "var(--text-soft)",
-        }}
-      >
-        {label}
+      <p className="muted-text allocation-note">
+        Smart allocation reduced the peak load and
+        kept the system within safe operating
+        limits.
       </p>
-
-      <h2
-        style={{
-          marginTop: 10,
-          marginBottom: 0,
-
-          fontSize: 30,
-
-          color: accent,
-        }}
-      >
-        {numericValue.toLocaleString(
-          undefined,
-          {
-            maximumFractionDigits: 2,
-          }
-        )}{" "}
-        {unit || ""}
-      </h2>
-    </div>
+    </section>
   );
 }
 

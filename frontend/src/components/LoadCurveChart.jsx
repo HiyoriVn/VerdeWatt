@@ -1,62 +1,131 @@
-import React from "react";
-
 import {
-  LineChart,
+  CalendarDays,
+  ChevronDown,
+} from "lucide-react";
+import {
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
 } from "recharts";
 
-function LoadCurveChart({ data = [] }) {
+function buildOptimizedLoadMap(
+  allocationData,
+  referenceRows
+) {
+  const map = new Map();
+
+  if (!Array.isArray(allocationData)) {
+    return map;
+  }
+
+  allocationData.forEach((entry, index) => {
+    if (
+      entry !== null &&
+      typeof entry === "object"
+    ) {
+      const hourValue =
+        entry.hour ?? entry.time ?? index;
+
+      const optimizedValue = [
+        entry.optimized_total_load_kw,
+        entry.total_load_kw,
+        entry.total_kw,
+        entry.load_kw,
+        entry.value,
+      ].find((value) => value !== undefined);
+
+      map.set(
+        String(hourValue),
+        Number(optimizedValue ?? 0)
+      );
+
+      return;
+    }
+
+    const fallbackHour =
+      referenceRows[index]?.hour ?? index;
+
+    map.set(String(fallbackHour), Number(entry ?? 0));
+  });
+
+  return map;
+}
+
+function LoadCurveChart({
+  data = [],
+  allocationData,
+}) {
   if (!data.length) {
     return (
-      <div className="dashboard-card">
-        <p>No load data available yet.</p>
-      </div>
+      <section className="card glass-card">
+        <p className="muted-text">
+          No load data available yet.
+        </p>
+      </section>
     );
   }
 
-  const chartData = data.map((row) => ({
-    ...row,
+  const optimizedLoadMap = buildOptimizedLoadMap(
+    allocationData,
+    data
+  );
 
-    unmanaged_total_load_kw:
-      Number(row.base_load_kw || 0) +
-      Number(row.unmanaged_ev_load_kw || 0),
-  }));
+  const chartData = data.map((row) => {
+    const baseLoad = Number(row.base_load_kw ?? 0);
+    const unmanagedEv = Number(
+      row.unmanaged_ev_load_kw ?? 0
+    );
+
+    const hourKey = String(row.hour);
+
+    return {
+      ...row,
+      unmanaged_total_load_kw:
+        baseLoad + unmanagedEv,
+      optimized_total_load_kw:
+        optimizedLoadMap.has(hourKey)
+          ? optimizedLoadMap.get(hourKey)
+          : null,
+    };
+  });
+
+  const hasOptimizedLine = chartData.some((row) =>
+    Number.isFinite(row.optimized_total_load_kw)
+  );
 
   return (
-    <div className="dashboard-card">
-      <h2
-        style={{
-          marginTop: 0,
-          marginBottom: 20,
-        }}
-      >
-        Load Curve Analytics
-      </h2>
+    <section className="card glass-card">
+      <div className="load-curve-header">
+        <h2>Load Curve Analytics</h2>
 
-      <div
-        style={{
-          width: "100%",
-          height: 340,
-        }}
-      >
+        <button
+          type="button"
+          className="chart-date-button"
+        >
+          <CalendarDays size={14} />
+          <span>Today</span>
+          <ChevronDown size={14} />
+        </button>
+      </div>
+
+      <div className="load-curve-chart-frame">
         <ResponsiveContainer>
           <LineChart
             data={chartData}
             margin={{
-              top: 10,
-              right: 16,
-              left: 0,
-              bottom: 10,
+              top: 12,
+              right: 18,
+              left: 2,
+              bottom: 6,
             }}
           >
             <CartesianGrid
-              stroke="rgba(148,163,184,0.15)"
+              stroke="var(--chart-grid)"
               strokeDasharray="3 3"
             />
 
@@ -64,40 +133,32 @@ function LoadCurveChart({ data = [] }) {
               dataKey="hour"
               tickFormatter={(value) => `${value}:00`}
               stroke="var(--text-soft)"
-              tick={{
-                fill: "var(--text-soft)",
-              }}
             />
 
             <YAxis
               unit=" kW"
               stroke="var(--text-soft)"
-              tick={{
-                fill: "var(--text-soft)",
-              }}
             />
 
             <Tooltip
-              labelFormatter={(value) => `Hour ${value}:00`}
+              labelFormatter={(value) =>
+                `Hour ${value}:00`
+              }
               contentStyle={{
-                background: "var(--surface)",
+                background: "var(--tooltip-bg)",
                 border: "1px solid var(--border)",
-                borderRadius: "14px",
-
+                borderRadius: 12,
                 color: "var(--text)",
-
-                boxShadow:
-                  "0 10px 30px rgba(0,0,0,0.25)",
               }}
             />
 
-            <Legend />
+            <Legend wrapperStyle={{ color: "var(--text-soft)" }} />
 
             <Line
               type="monotone"
               dataKey="base_load_kw"
               name="Base Load"
-              stroke="#3b82f6"
+              stroke="#2563eb"
               strokeWidth={2}
               dot={false}
             />
@@ -107,7 +168,7 @@ function LoadCurveChart({ data = [] }) {
               dataKey="safe_capacity_kw"
               name="Safe Capacity"
               stroke="#22c55e"
-              strokeDasharray="5 4"
+              strokeDasharray="6 4"
               strokeWidth={2}
               dot={false}
             />
@@ -129,27 +190,28 @@ function LoadCurveChart({ data = [] }) {
               strokeWidth={3}
               dot={false}
             />
+
+            {hasOptimizedLine ? (
+              <Line
+                type="monotone"
+                dataKey="optimized_total_load_kw"
+                name="Optimized Total Load"
+                stroke="#f97316"
+                strokeWidth={3}
+                dot={false}
+              />
+            ) : null}
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      <p
-        style={{
-          marginTop: 18,
-
-          fontSize: 13,
-
-          color: "var(--text-soft)",
-
-          lineHeight: 1.6,
-        }}
-      >
+      <p className="muted-text load-chart-note">
         During evening peak hours, unmanaged total
         load can rise above the safe capacity line.
-        This is the overload risk that smart
-        allocation is designed to reduce.
+        This is the overload risk smart allocation
+        is designed to reduce.
       </p>
-    </div>
+    </section>
   );
 }
 

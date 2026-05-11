@@ -1,135 +1,117 @@
-import React from "react";
+import {
+  ArrowLeftRight,
+  Gift,
+  Leaf,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+  Zap,
+} from "lucide-react";
 
 function KPICards({ billing }) {
   if (!billing) {
     return (
-      <div className="dashboard-card">
-        <p>Billing KPI data is not available yet.</p>
-      </div>
+      <section className="card glass-card">
+        <p className="muted-text">
+          Billing KPI data is not available yet.
+        </p>
+      </section>
     );
   }
 
   const formatNumber = (value) =>
-    Number(value ?? 0).toLocaleString(
-      undefined,
-      {
-        maximumFractionDigits: 2,
-      }
-    );
+    Number(value ?? 0).toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+    });
 
   const formatVnd = (value) =>
-    new Intl.NumberFormat(
-      "vi-VN",
-      {
-        style: "currency",
-        currency: "VND",
-      }
-    ).format(Number(value ?? 0));
+    new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      maximumFractionDigits: 0,
+    }).format(Number(value ?? 0));
 
   const cards = [
     {
       label: "Total kWh",
       value: billing.total_kwh,
       formatter: formatNumber,
-      accent: "#3b82f6",
+      unit: "kWh",
+      Icon: Zap,
+      tone: "kpi-blue",
     },
-
     {
       label: "Peak kWh",
       value: billing.peak_kwh,
       formatter: formatNumber,
-      accent: "#ef4444",
+      unit: "kWh",
+      Icon: TrendingUp,
+      tone: "kpi-red",
     },
-
     {
       label: "Off-peak kWh",
       value: billing.offpeak_kwh,
       formatter: formatNumber,
-      accent: "#22c55e",
+      unit: "kWh",
+      Icon: TrendingDown,
+      tone: "kpi-cyan",
     },
-
     {
       label: "Shifted kWh",
       value: billing.shifted_kwh,
       formatter: formatNumber,
-      accent: "#8b5cf6",
+      unit: "kWh",
+      Icon: ArrowLeftRight,
+      tone: "kpi-purple",
     },
-
     {
       label: "Estimated Cost",
       value: billing.estimated_cost_vnd,
       formatter: formatVnd,
-      accent: "#f59e0b",
+      Icon: Wallet,
+      tone: "kpi-amber",
     },
-
     {
       label: "Estimated Saving",
       value: billing.estimated_saving_vnd,
       formatter: formatVnd,
-      accent: "#10b981",
+      Icon: Leaf,
+      tone: "kpi-green",
     },
-
     {
       label: "Incentive Value",
       value: billing.incentive_value_vnd,
       formatter: formatVnd,
-      accent: "#06b6d4",
+      Icon: Gift,
+      tone: "kpi-violet",
     },
   ];
 
   return (
-    <div className="card-grid">
-      {cards.map((card) => (
-        <div
-          key={card.label}
-          className="dashboard-card"
-          style={{
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
+    <div className="kpi-row">
+      {cards.map((card) => {
+        const Icon = card.Icon;
 
-              top: 0,
-              left: 0,
-
-              width: 5,
-              height: "100%",
-
-              background: card.accent,
-            }}
-          />
-
-          <p
-            style={{
-              margin: 0,
-
-              fontSize: 13,
-
-              color: "var(--text-soft)",
-            }}
+        return (
+          <article
+            key={card.label}
+            className={`card glass-card kpi-card ${card.tone}`}
           >
-            {card.label}
-          </p>
+            <div className="kpi-card-top">
+              <p>{card.label}</p>
 
-          <h2
-            style={{
-              marginTop: 12,
-              marginBottom: 0,
+              <span className="kpi-card-icon">
+                <Icon size={16} />
+              </span>
+            </div>
 
-              fontSize: 28,
-
-              color: card.accent,
-
-              lineHeight: 1.2,
-            }}
-          >
-            {card.formatter(card.value)}
-          </h2>
-        </div>
-      ))}
+            <h2>
+              {card.formatter(card.value)}
+              {card.unit ? <small>{card.unit}</small> : null}
+            </h2>
+          </article>
+        );
+      })}
     </div>
   );
 }

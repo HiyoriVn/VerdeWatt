@@ -1,66 +1,34 @@
-import React from "react";
-
 function EVSessionCard({ session }) {
-  const priorityColor = {
-    urgent: "#ef4444",
-    normal: "#f59e0b",
-    flexible: "#3b82f6",
+  const priorityKey = String(
+    session?.priority || "normal"
+  ).toLowerCase();
+
+  const priorityClassMap = {
+    urgent: "priority-urgent",
+    normal: "priority-normal",
+    flexible: "priority-flexible",
   };
 
-  return (
-    <div className="dashboard-card">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+  const priorityClass =
+    priorityClassMap[priorityKey] ||
+    "priority-normal";
 
-          marginBottom: 18,
-        }}
-      >
-        <h3
-          style={{
-            margin: 0,
-            color: "var(--text)",
-          }}
-        >
-          {session.id}
-        </h3>
+  return (
+    <article className="card glass-card ev-card">
+      <div className="ev-card-top">
+        <h3>{session.id}</h3>
 
         <span
-          style={{
-            padding: "6px 10px",
-
-            borderRadius: 999,
-
-            fontSize: 12,
-            fontWeight: 600,
-
-            background:
-              priorityColor[
-                session.priority
-              ] + "20",
-
-            color:
-              priorityColor[
-                session.priority
-              ],
-          }}
+          className={`ev-priority-badge ${priorityClass}`}
         >
-          {session.priority}
+          {priorityKey}
         </span>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-        }}
-      >
+      <div className="ev-card-body">
         <InfoRow
           label="SOC"
-          value={`${session.current_soc}% → ${session.target_soc}%`}
+          value={`${session.current_soc}% -> ${session.target_soc}%`}
         />
 
         <InfoRow
@@ -74,42 +42,19 @@ function EVSessionCard({ session }) {
         />
 
         <InfoRow
-          label="Max Charging"
+          label="Max charging"
           value={`${session.max_charging_kw} kW`}
         />
       </div>
-    </div>
+    </article>
   );
 }
 
 function InfoRow({ label, value }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-
-        gap: 12,
-      }}
-    >
-      <span
-        style={{
-          color: "var(--text-soft)",
-          fontSize: 14,
-        }}
-      >
-        {label}
-      </span>
-
-      <span
-        style={{
-          color: "var(--text)",
-          fontWeight: 600,
-        }}
-      >
-        {value}
-      </span>
+    <div className="ev-info-row">
+      <span>{label}</span>
+      <strong>{value}</strong>
     </div>
   );
 }

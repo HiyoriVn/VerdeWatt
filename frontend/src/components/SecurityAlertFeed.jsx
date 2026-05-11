@@ -1,198 +1,78 @@
-import React from "react";
+function resolveSeverity(severity) {
+  const level = String(severity || "low").toLowerCase();
 
-function SecurityAlertFeed({
-  alerts = [],
-}) {
-  if (!alerts.length) {
-    return (
-      <div className="dashboard-card">
-        <p>
-          No active alerts right now.
-        </p>
-      </div>
-    );
+  if (level === "high") {
+    return {
+      label: "High",
+      itemClass: "severity-high",
+    };
   }
 
-  const severityStyle = (
-    severity
-  ) => {
-    const level = String(
-      severity || ""
-    ).toLowerCase();
-
-    if (level === "high") {
-      return {
-        label: "High",
-
-        bg: "rgba(239,68,68,0.15)",
-
-        color: "#ef4444",
-
-        border:
-          "rgba(239,68,68,0.3)",
-      };
-    }
-
-    if (level === "medium") {
-      return {
-        label: "Medium",
-
-        bg: "rgba(245,158,11,0.15)",
-
-        color: "#f59e0b",
-
-        border:
-          "rgba(245,158,11,0.3)",
-      };
-    }
-
+  if (level === "medium") {
     return {
-      label: "Low",
-
-      bg: "rgba(34,197,94,0.15)",
-
-      color: "#22c55e",
-
-      border:
-        "rgba(34,197,94,0.3)",
+      label: "Medium",
+      itemClass: "severity-medium",
     };
+  }
+
+  return {
+    label: "Low",
+    itemClass: "severity-low",
   };
+}
 
+function SecurityAlertFeed({ alerts = [] }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 14,
-      }}
-    >
-      {alerts.map((alert) => {
-        const badge =
-          severityStyle(
-            alert.severity
-          );
+    <section className="card glass-card security-feed-card">
+      <h3>Security Alert Feed</h3>
 
-        return (
-          <div
-            key={alert.id}
-            className="dashboard-card"
-            style={{
-              borderLeft: `5px solid ${badge.color}`,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
+      {!alerts.length ? (
+        <p className="muted-text">
+          No active alerts right now.
+        </p>
+      ) : (
+        <div className="security-alert-list">
+          {alerts.map((alert) => {
+            const severity = resolveSeverity(
+              alert.severity
+            );
 
-                alignItems:
-                  "center",
-
-                gap: 10,
-
-                marginBottom: 12,
-
-                flexWrap: "wrap",
-              }}
-            >
-              <span
-                style={{
-                  display:
-                    "inline-flex",
-
-                  alignItems:
-                    "center",
-
-                  justifyContent:
-                    "center",
-
-                  padding:
-                    "5px 10px",
-
-                  borderRadius: 999,
-
-                  fontSize: 12,
-
-                  fontWeight: 700,
-
-                  background:
-                    badge.bg,
-
-                  color:
-                    badge.color,
-
-                  border: `1px solid ${badge.border}`,
-                }}
+            return (
+              <article
+                key={alert.id}
+                className={`security-alert-item ${severity.itemClass}`}
               >
-                {badge.label}
-              </span>
+                <div className="security-alert-head">
+                  <span className="severity-pill">
+                    {severity.label}
+                  </span>
 
-              <h3
-                style={{
-                  margin: 0,
+                  <h4>{alert.title}</h4>
+                </div>
 
-                  color:
-                    "var(--text)",
-                }}
-              >
-                {alert.title}
-              </h3>
-            </div>
+                <p>{alert.message}</p>
 
-            <p
-              style={{
-                marginTop: 0,
+                <div className="security-alert-meta">
+                  <span>
+                    Suggested action:{" "}
+                    {alert.suggested_action}
+                  </span>
 
-                marginBottom: 14,
+                  <time>{alert.timestamp}</time>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
 
-                color:
-                  "var(--text-soft)",
-
-                lineHeight: 1.6,
-              }}
-            >
-              {alert.message}
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-
-                flexDirection:
-                  "column",
-
-                gap: 6,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 14,
-
-                  color:
-                    "var(--text)",
-                }}
-              >
-                <strong>
-                  Suggested action:
-                </strong>{" "}
-                {
-                  alert.suggested_action
-                }
-              </span>
-
-              <span
-                style={{
-                  fontSize: 12,
-
-                  color:
-                    "var(--text-muted)",
-                }}
-              >
-                {alert.timestamp}
-              </span>
-            </div>
-          </div>
-        );
-      })}
-    </div>
+      <button
+        type="button"
+        className="security-feed-footer-btn"
+      >
+        View all alerts -&gt;
+      </button>
+    </section>
   );
 }
 
