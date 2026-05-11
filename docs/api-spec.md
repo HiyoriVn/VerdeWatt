@@ -48,6 +48,8 @@ http://127.0.0.1:8000
 | GET    | `/api/schedule` | Get per-EV charging recommendations   | Vehicle lookup / schedule panel |
 | GET    | `/api/vehicle/{vehicle_id}` | Get one vehicle recommendation by ID | Vehicle lookup form |
 | GET    | `/api/charger-commands` | Get OCPP-compatible mock charger commands | Charger control demo panel |
+| GET    | `/api/forecast` | Get next-6-hour base load forecast | Forecast widget (optional) |
+| GET    | `/api/impact` | Get environmental impact estimate from shifted energy | Impact KPI card (optional) |
 
 ---
 
@@ -665,6 +667,118 @@ preference=balanced|fastest|cheapest
 
 ---
 
+# 11. `GET /api/forecast`
+
+## Purpose
+
+Return a lightweight 6-hour forecast for `base_load_kw` using a
+`RandomForestRegressor` model trained on augmented synthetic data.
+
+## Frontend Component
+
+* Forecast widget or operations panel (optional in current dashboard)
+
+## Request Body
+
+None.
+
+## Example Response
+
+```json
+{
+  "model": "RandomForestRegressor",
+  "forecast_horizon_hours": 6,
+  "predictions": [
+    {
+      "hour": 18,
+      "predicted_base_load_kw": 92.5,
+      "is_peak_hour": true
+    }
+  ],
+  "feature_importance": [
+    {
+      "feature": "hour",
+      "importance": 0.31
+    }
+  ],
+  "note": "MVP forecast trained on augmented synthetic data for prototype demonstration."
+}
+```
+
+## Important Fields
+
+* `model`: model family used by the endpoint.
+* `forecast_horizon_hours`: number of future hours predicted.
+* `predictions`: list of forecast rows.
+* `feature_importance`: simple model interpretability output.
+* `note`: MVP scope explanation for hackathon context.
+
+## Error Behavior
+
+If `scikit-learn` is not installed:
+
+* HTTP `503`
+* Response:
+
+```json
+{
+  "detail": "scikit-learn is required for forecasting. Install with: pip install -r backend/requirements.txt"
+}
+```
+
+---
+
+# 12. `GET /api/impact`
+
+## Purpose
+
+Convert shifted charging energy into simple environmental indicators
+(`co2_saved_kg`, `trees_equivalent`, `petrol_equivalent_liters`).
+
+## Frontend Component
+
+* Impact KPI cards (optional in current dashboard)
+
+## Request Body
+
+None.
+
+## Example Response
+
+```json
+{
+  "shifted_kwh": 204.0,
+  "estimated_saving_vnd": 346800.0,
+  "co2_saved_kg": 96.19,
+  "trees_equivalent": 4.42,
+  "petrol_equivalent_liters": 41.64,
+  "assumptions": {
+    "grid_emission_factor_kg_co2_per_kwh": 0.4715,
+    "tree_absorption_kg_co2_per_year": 21.77,
+    "petrol_kg_co2_per_liter": 2.31
+  },
+  "note": "Prototype impact estimate. Final emission factors should be verified with official sources before submission."
+}
+```
+
+## Important Fields
+
+* `shifted_kwh`: EV energy moved away from peak charging periods.
+* `co2_saved_kg`: estimated CO2 reduction from shifted energy.
+* `trees_equivalent`: simple tree-equivalent communication metric.
+* `petrol_equivalent_liters`: equivalent liters of petrol emissions.
+* `assumptions`: constants used for conversion.
+
+## Error Behavior
+
+Standard API failures return:
+
+```json
+{ "detail": "Readable error message" }
+```
+
+---
+
 # Error Response Convention
 
 For the MVP, API errors should return a simple JSON shape:
@@ -697,6 +811,8 @@ Before considering the frontend API integration done, check:
 * Schedule UI can load data from `GET /api/schedule`.
 * Vehicle lookup can load data from `GET /api/vehicle/{vehicle_id}`.
 * Charger command panel can load data from `GET /api/charger-commands`.
+* Forecast widget can load data from `GET /api/forecast` (optional).
+* Impact widget can load data from `GET /api/impact` (optional).
 * If one API fails, the UI shows a friendly fallback message.
 * No frontend component assumes authentication.
 * No frontend component assumes real payment.
@@ -718,6 +834,8 @@ Recommended test order in Swagger docs:
 7. GET /api/schedule
 8. GET /api/vehicle/EV_001
 9. GET /api/charger-commands
+10. GET /api/forecast
+11. GET /api/impact
 ```
 
 If all endpoints return valid JSON, the backend is ready for frontend integration.

@@ -65,17 +65,18 @@ The optimizer also computes:
 This is called a greedy approach because it always gives available power first
 to the highest-priority and earliest-deadline EVs at each hour.
 
-## 5. Why the MVP uses weighted moving average and greedy priority queue instead of LSTM
+## 5. Why the MVP optimizer does not use LSTM
 
-The MVP focuses on simple, explainable logic that works with small amounts of
-data and can be demoed reliably:
+The charging optimizer itself is fully rule-based. It does not use deep
+learning or black-box scheduling.
 
-- **Weighted moving average** is used for load forecasting because it is easy
-  to understand, quick to compute, and does not require training data.
-- **Greedy priority queue** is used for allocation because it gives clear,
-  predictable decisions based on priority and deadlines.
-- **LSTM** would require more data, training time, and debugging effort than a
-  hackathon MVP can afford, and its decisions are harder to explain.
+Reasons:
+
+- **Explainability:** building operators can understand why each EV was chosen.
+- **Reliability:** deterministic rules are easier to debug during a hackathon.
+- **Data limits:** LSTM models usually need larger historical datasets.
+- **Scope control:** the MVP focuses on safe allocation first, then optional
+  forecasting improvements in a separate module.
 
 ## 6. Output metrics
 
@@ -87,7 +88,13 @@ The optimizer returns these metrics:
 - `peak_reduction_percent`: Percentage peak reduction.
 - `evs_fully_served`: EV IDs that reached full required energy.
 - `evs_partially_served`: EV IDs that still have remaining energy demand.
-- `peak_after_under_safe_capacity_kw`: True if optimized load never exceeds safe capacity.
+- `peak_after_under_safe_capacity_kw`: numeric safety margin at the optimized
+  peak hour.
+  - Formula: `safe_capacity_at_peak_after_hour - peak_after_kw`
+  - Positive: still below safe limit
+  - Zero: exactly at safe limit
+  - Negative: above safe limit
+- `peak_after_is_safe`: boolean safety flag (`true` when margin is non-negative).
 
 ## 7. How to run
 
@@ -107,4 +114,6 @@ The CLI prints a validation summary with these fields:
 - `peak_reduction_percent`: Percent reduction at the peak.
 - `evs_fully_served`: EV IDs that finished charging.
 - `evs_partially_served`: EV IDs that still need energy.
-- `peak_after_under_safe_capacity_kw`: `yes` means every hour stayed under the safe limit.
+- `peak_after_under_safe_capacity_kw`: numeric safety margin in kW at the
+  optimized peak hour.
+- `peak_after_is_safe`: quick yes/no safety flag based on that margin.

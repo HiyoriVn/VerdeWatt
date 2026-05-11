@@ -40,7 +40,15 @@ Run these commands from the project root on a machine with Python installed:
 python -m venv .venv
 ```
 2. Activate the virtual environment.
-Windows (bash):
+Windows (PowerShell):
+```bash
+.venv\Scripts\Activate.ps1
+```
+Windows (Command Prompt):
+```bash
+.venv\Scripts\activate.bat
+```
+Windows (Git Bash):
 ```bash
 source .venv/Scripts/activate
 ```
@@ -62,6 +70,13 @@ Expected local URLs:
 - `http://127.0.0.1:8000/api/load`
 - `http://127.0.0.1:8000/api/sessions`
 - `http://127.0.0.1:8000/api/allocate`
+- `http://127.0.0.1:8000/api/alerts`
+- `http://127.0.0.1:8000/api/billing`
+- `http://127.0.0.1:8000/api/schedule`
+- `http://127.0.0.1:8000/api/vehicle/EV_001`
+- `http://127.0.0.1:8000/api/charger-commands`
+- `http://127.0.0.1:8000/api/forecast`
+- `http://127.0.0.1:8000/api/impact`
 - `http://127.0.0.1:8000/docs`
 
 ## Not in MVP
@@ -76,4 +91,3 @@ Expected local URLs:
 
 - `data/synthetic_building_load.csv`: 24-hour building profile with constant `safe_capacity_kw` of 120, low overnight base load, moderate daytime load, and evening peak stress where unmanaged EV load pushes total demand above safe capacity.
 - `data/ev_sessions_sample.json`: 12 sample EV charging sessions for scheduling tests, including urgent, normal, and flexible priorities plus one intentionally abnormal session (`EV_999` with unusually high `max_charging_kw`) for security/anomaly testing.
-
