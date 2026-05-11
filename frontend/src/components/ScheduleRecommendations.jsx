@@ -11,9 +11,12 @@ function ScheduleRecommendations() {
     async function loadSchedule() {
       try {
         const data = await getSchedule();
+
         setRows(Array.isArray(data) ? data : []);
       } catch {
-        setError("Could not load schedule recommendations right now.");
+        setError(
+          "Could not load schedule recommendations right now."
+        );
       } finally {
         setLoading(false);
       }
@@ -23,37 +26,63 @@ function ScheduleRecommendations() {
   }, []);
 
   if (loading) {
-    return <p>Loading schedule recommendations...</p>;
+    return (
+      <p className="dashboard-muted">
+        Loading schedule recommendations...
+      </p>
+    );
   }
 
   if (error) {
-    return <p style={{ color: "#b91c1c" }}>{error}</p>;
+    return (
+      <p
+        style={{
+          color: "var(--danger)",
+          fontWeight: 600,
+        }}
+      >
+        {error}
+      </p>
+    );
   }
 
   if (!rows.length) {
-    return <p>No schedule recommendations available.</p>;
+    return (
+      <p className="dashboard-muted">
+        No schedule recommendations available.
+      </p>
+    );
   }
 
   return (
-    <div style={{ overflowX: "auto" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+    <div className="schedule-table-wrapper">
+      <table className="schedule-table">
         <thead>
-          <tr style={{ background: "#f8fafc" }}>
-            <th style={thStyle}>Vehicle</th>
-            <th style={thStyle}>Priority</th>
-            <th style={thStyle}>Status</th>
-            <th style={thStyle}>Recommended Action</th>
-            <th style={thStyle}>Estimated Completion Hour</th>
+          <tr>
+            <th>Vehicle</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Recommended Action</th>
+            <th>Completion Hour</th>
           </tr>
         </thead>
+
         <tbody>
           {rows.map((row) => (
             <tr key={row.vehicle_id}>
-              <td style={tdStyle}>{row.vehicle_id}</td>
-              <td style={tdStyle}>{row.priority}</td>
-              <td style={tdStyle}>{row.status}</td>
-              <td style={tdStyle}>{row.recommended_action}</td>
-              <td style={tdStyle}>{row.estimated_completion_hour ?? "N/A"}</td>
+              <td>{row.vehicle_id}</td>
+
+              <td>
+                <PriorityBadge priority={row.priority} />
+              </td>
+
+              <td>{row.status}</td>
+
+              <td>{row.recommended_action}</td>
+
+              <td>
+                {row.estimated_completion_hour ?? "N/A"}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -62,18 +91,24 @@ function ScheduleRecommendations() {
   );
 }
 
-const thStyle = {
-  textAlign: "left",
-  border: "1px solid #dbe3ef",
-  padding: "8px",
-  fontSize: 13,
-};
+function PriorityBadge({ priority }) {
+  const value = String(priority || "").toLowerCase();
 
-const tdStyle = {
-  border: "1px solid #e5e7eb",
-  padding: "8px",
-  fontSize: 13,
-  verticalAlign: "top",
-};
+  let className = "priority-badge";
+
+  if (value === "urgent") {
+    className += " urgent";
+  } else if (value === "normal") {
+    className += " normal";
+  } else {
+    className += " flexible";
+  }
+
+  return (
+    <span className={className}>
+      {priority}
+    </span>
+  );
+}
 
 export default ScheduleRecommendations;
