@@ -126,6 +126,20 @@ export function getVehicle(
 }
 
 /* =========================
+   CHARGING REQUEST
+========================= */
+
+export function submitChargingRequest(
+  payload
+) {
+  return request("/api/charging-request", {
+    method: "POST",
+
+    body: JSON.stringify(payload),
+  });
+}
+
+/* =========================
    CHARGER COMMANDS
 ========================= */
 

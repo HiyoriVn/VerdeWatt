@@ -51,6 +51,9 @@ export default function AppShell({
   children,
   activeTab,
   onTabChange,
+  staffProfile,
+  onOpenPublicSite,
+  onLogout,
 }) {
   return (
     <div className="app-shell">
@@ -96,9 +99,32 @@ export default function AppShell({
           </div>
 
           <div>
-            <strong>Admin</strong>
-            <p>Building Manager</p>
+            <strong>
+              {staffProfile?.email || "Admin"}
+            </strong>
+            <p>
+              {staffProfile?.buildingCode
+                ? `Building ${staffProfile.buildingCode}`
+                : "Building Manager"}
+            </p>
           </div>
+        </div>
+
+        <div className="sidebar-public-actions">
+          <button
+            type="button"
+            className="sidebar-mini-btn"
+            onClick={onOpenPublicSite}
+          >
+            Public Site
+          </button>
+          <button
+            type="button"
+            className="sidebar-mini-btn"
+            onClick={onLogout}
+          >
+            Sign Out
+          </button>
         </div>
       </aside>
 
