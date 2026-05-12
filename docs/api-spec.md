@@ -61,8 +61,9 @@ http://127.0.0.1:8000
 | GET    | `/api/allocate` | Browser helper for allocation testing | Manual test / dev helper  |
 | GET    | `/api/alerts`   | Get rule-based security alerts        | `SecurityAlertFeed`       |
 | POST   | `/api/billing`  | Get billing + impact KPI simulation   | `KPICards`                |
-| GET    | `/api/schedule` | Get per-EV charging recommendations   | Vehicle lookup / schedule panel |
-| GET    | `/api/vehicle/{vehicle_id}` | Get one vehicle recommendation by ID | Vehicle lookup form |
+| GET    | `/api/schedule` | Return charging recommendations for existing EV sessions | Charging Sessions page / building manager overview |
+| GET    | `/api/vehicle/{vehicle_id}` | Check one vehicle charging status by code | Resident vehicle status check |
+| POST   | `/api/charging-request` | Submit one charging request and get recommendation | Resident charging request form |
 | GET    | `/api/charger-commands` | Get OCPP-compatible mock charger commands | Charger control demo panel |
 | GET    | `/api/forecast` | Get next-6-hour base load forecast | Forecast widget (optional) |
 | GET    | `/api/impact` | Get environmental impact estimate from shifted energy | Impact KPI card (optional) |
@@ -502,18 +503,24 @@ Suggested KPI cards:
 
 ## Purpose
 
-Return practical, rule-based charging recommendations for each EV session.
-
-This endpoint combines EV session data and optimizer output to produce user-facing schedule guidance.
+Return charging recommendations for existing EV sessions.
 
 ## Frontend Component
 
-* Vehicle lookup / recommendation table
-* Dashboard schedule panel
+* Charging Sessions page
+* Building manager schedule overview
 
 ## Request Body
 
 None.
+
+## Query Parameter
+
+`preference` (optional):
+
+- `fastest`
+- `cheapest`
+- `balanced` (default)
 
 ## Example Response
 
@@ -521,36 +528,29 @@ None.
 [
   {
     "vehicle_id": "EV_001",
-    "current_soc": 22.0,
-    "target_soc": 80.0,
+    "current_soc": 22,
+    "target_soc": 80,
     "priority": "urgent",
     "status": "charging_now",
-    "recommended_action": "Charge now in the earliest safe slot to protect deadline reliability.",
-    "scheduled_start_hour": 0,
+    "recommended_action": "Charge now",
+    "scheduled_start_hour": 19,
     "estimated_completion_hour": 7,
-    "estimated_cost_vnd": 42000.0,
-    "estimated_saving_vnd": 0.0,
-    "user_message": "Your vehicle is prioritized because it is urgent and must be ready by 07:00."
+    "estimated_cost_vnd": 42000,
+    "estimated_saving_vnd": 0,
+    "user_message": "Your vehicle is prioritized because it must be ready by 07:00."
   }
 ]
 ```
 
 ## Important Fields
 
-* `vehicle_id`: EV identifier.
-* `current_soc`, `target_soc`: current and target battery percentages.
-* `priority`: `urgent`, `normal`, or `flexible`.
-* `status`: recommendation status (`charging_now`, `scheduled_offpeak`, `delayed_for_safety`, `completed`, `needs_attention`).
-* `recommended_action`: operator-facing action text.
-* `scheduled_start_hour`: recommended start hour if applicable.
-* `estimated_completion_hour`: simple completion estimate from allocated hours.
-* `estimated_cost_vnd`: estimated charging cost based on tariff assumptions.
-* `estimated_saving_vnd`: estimated savings vs peak-only baseline.
-* `user_message`: user-facing explanation text.
+* `status` can be values like `charging_now`, `scheduled_offpeak`, `delayed_for_safety`, `completed`, or `needs_attention`.
+* `recommended_action` and `user_message` are beginner-friendly strings for frontend display.
+* `estimated_cost_vnd` and `estimated_saving_vnd` are simulation estimates for MVP.
 
 ## Error Behavior
 
-* Invalid query values fall back to `balanced` mode in MVP.
+* Unsupported `preference` values are handled as `balanced` mode in MVP.
 * Standard API failures return:
 
 ```json
@@ -563,11 +563,11 @@ None.
 
 ## Purpose
 
-Look up one vehicle and return only that vehicle's latest scheduler recommendation.
+Allow residents to check charging status by vehicle code without login.
 
 ## Frontend Component
 
-* Vehicle lookup search bar
+* Resident vehicle lookup page
 * Driver status card
 
 ## Request Body
@@ -578,42 +578,90 @@ Path parameter:
 
 * `vehicle_id` (case-insensitive)
 
-## Example Response
+## Example Request
+
+`GET /api/vehicle/EV_001`
+
+## Example Success Response (200)
 
 ```json
 {
   "vehicle_id": "EV_001",
-  "current_soc": 22.0,
-  "target_soc": 80.0,
+  "current_soc": 22,
+  "target_soc": 80,
   "priority": "urgent",
   "status": "charging_now",
-  "recommended_action": "Charge now in the earliest safe slot to protect deadline reliability.",
-  "scheduled_start_hour": 0,
+  "recommended_action": "Charge now",
   "estimated_completion_hour": 7,
-  "estimated_cost_vnd": 42000.0,
-  "estimated_saving_vnd": 0.0,
-  "user_message": "Your vehicle is prioritized because it is urgent and must be ready by 07:00."
+  "estimated_cost_vnd": 42000,
+  "estimated_saving_vnd": 0,
+  "user_message": "Your vehicle is prioritized because it must be ready by 07:00."
 }
 ```
 
-## Important Fields
-
-Same recommendation fields as `/api/schedule`, but for a single vehicle.
-
-## Error Behavior
-
-If vehicle code is not found:
-
-* HTTP `404`
-* Response:
+## Example 404 Response
 
 ```json
-{ "detail": "Vehicle code not found" }
+{
+  "detail": "Vehicle code not found"
+}
 ```
 
 ---
 
-# 10. `GET /api/charger-commands`
+# 10. `POST /api/charging-request`
+
+## Purpose
+
+Allow a resident to submit a charging request and receive a smart charging recommendation.
+
+## Frontend Component
+
+* Resident charging request form
+* Request confirmation panel
+
+## Request Body
+
+```json
+{
+  "vehicle_id": "EV_TEST_01",
+  "current_soc": 25,
+  "target_soc": 80,
+  "battery_kwh": 60,
+  "deadline_hour": 7,
+  "preference": "cheapest"
+}
+```
+
+Allowed `preference` values:
+
+- `fastest`
+- `cheapest`
+- `balanced`
+
+## Example Response
+
+```json
+{
+  "vehicle_id": "EV_TEST_01",
+  "status": "scheduled_offpeak",
+  "recommended_action": "Schedule for off-peak charging",
+  "scheduled_start_hour": 23,
+  "estimated_completion_hour": 6,
+  "estimated_cost_vnd": 31000,
+  "estimated_saving_vnd": 11000,
+  "user_message": "Your vehicle is scheduled for off-peak charging to reduce cost and avoid building overload."
+}
+```
+
+## Notes
+
+* This endpoint is simulation-only for MVP.
+* It does not create login accounts or persistent database records.
+
+---
+
+# 11. `GET /api/charger-commands`
 
 ## Purpose
 
@@ -676,7 +724,7 @@ preference=balanced|fastest|cheapest
 
 ---
 
-# 11. `GET /api/forecast`
+# 12. `GET /api/forecast`
 
 ## Purpose
 
@@ -737,7 +785,7 @@ If `scikit-learn` is not installed:
 
 ---
 
-# 12. `GET /api/impact`
+# 13. `GET /api/impact`
 
 ## Purpose
 
@@ -819,6 +867,7 @@ Before considering the frontend API integration done, check:
 * `KPICards` can load data from `POST /api/billing`.
 * Schedule UI can load data from `GET /api/schedule`.
 * Vehicle lookup can load data from `GET /api/vehicle/{vehicle_id}`.
+* Charging request form can call `POST /api/charging-request`.
 * Charger command panel can load data from `GET /api/charger-commands`.
 * Forecast widget can load data from `GET /api/forecast` (optional).
 * Impact widget can load data from `GET /api/impact` (optional).
@@ -842,9 +891,10 @@ Recommended test order in Swagger docs:
 6. POST /api/billing
 7. GET /api/schedule
 8. GET /api/vehicle/EV_001
-9. GET /api/charger-commands
-10. GET /api/forecast
-11. GET /api/impact
+9. POST /api/charging-request
+10. GET /api/charger-commands
+11. GET /api/forecast
+12. GET /api/impact
 ```
 
 If all endpoints return valid JSON, the backend is ready for frontend integration.
