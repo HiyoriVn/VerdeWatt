@@ -9,11 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.100.10",
+    "i18next": "^26.1.0",
     "lucide-react": "^1.14.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^17.0.7",
+    "react-loading-skeleton": "^3.5.0",
     "react-router-dom": "^7.15.0",
-    "recharts": "^2.12.7"
+    "recharts": "^2.12.7",
+    "sonner": "^2.0.7"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",

@@ -1,125 +1,191 @@
-:root[data-theme="dark"] {
-  --bg:
-    linear-gradient(
-      180deg,
-      #020617 0%,
-      #071120 100%
-    );
+/* src/styles/theme.css */
 
-  --surface:
-    rgba(15, 23, 42, 0.72);
+:root {
+  --radius-xl: 28px;
+  --radius-lg: 22px;
+  --radius-md: 18px;
 
-  --surface-2:
-    rgba(17, 24, 39, 0.72);
-
-  --text: #f8fafc;
-
-  --text-soft: #94a3b8;
-
-  --border:
-    rgba(255,255,255,0.08);
-
-  --primary: #22c55e;
-
-  --danger: #ef4444;
-
-  --accent: #38bdf8;
-
-  --accent-soft:
-    rgba(56,189,248,0.12);
-
-  --sidebar-bg:
-    linear-gradient(
-      180deg,
-      rgba(15,23,42,0.88),
-      rgba(15,23,42,0.68)
-    );
-
-  --sidebar-hover:
-    rgba(255,255,255,0.06);
-
-  --sidebar-active:
-    linear-gradient(
-      135deg,
-      rgba(34,197,94,0.16),
-      rgba(56,189,248,0.14)
-    );
-
-  --card-bg:
-    rgba(15,23,42,0.62);
-
-  --glow:
-    0 0 40px rgba(56,189,248,0.08);
-
-  --card-shadow:
-    0 12px 30px rgba(0,0,0,0.35);
-
-  --chart-grid:
-    rgba(255,255,255,0.06);
-
-  --tooltip-bg:
-    rgba(15,23,42,0.95);
+  --transition: 240ms ease;
 }
 
-:root[data-theme="light"] {
-  --bg:
+:root[data-theme="dark"] {
+
+  /* BACKGROUND */
+
+  --bg-solid: #040b17;
+
+  --bg-gradient:
+    radial-gradient(
+      circle at top right,
+      rgba(0,217,255,.10),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(34,255,136,.08),
+      transparent 30%
+    ),
     linear-gradient(
-      180deg,
-      #f8fafc 0%,
-      #edf4ff 100%
+      135deg,
+      #030712 0%,
+      #07111f 48%,
+      #0b1830 100%
     );
 
+  /* SURFACE */
+
   --surface:
-    rgba(255,255,255,0.78);
+    rgba(13,22,40,.96);
 
   --surface-2:
-    rgba(255,255,255,0.64);
+    rgba(18,30,52,.98);
 
-  --text: #0f172a;
-
-  --text-soft: #475569;
-
-  --border:
-    rgba(15,23,42,0.08);
-
-  --primary: #16a34a;
-
-  --danger: #dc2626;
-
-  --accent: #2563eb;
-
-  --accent-soft:
-    rgba(37,99,235,0.08);
+  --card-bg:
+    linear-gradient(
+      145deg,
+      rgba(16,28,50,.96),
+      rgba(10,18,34,.98)
+    );
 
   --sidebar-bg:
     linear-gradient(
       180deg,
-      rgba(255,255,255,0.84),
-      rgba(248,250,252,0.72)
+      #050b18 0%,
+      #091427 100%
     );
 
-  --sidebar-hover:
-    rgba(15,23,42,0.04);
+  --topbar-bg:
+    rgba(5,12,24,.72);
 
-  --sidebar-active:
-    linear-gradient(
-      135deg,
-      rgba(37,99,235,0.10),
-      rgba(56,189,248,0.08)
-    );
+  /* TEXT */
 
-  --card-bg:
-    rgba(255,255,255,0.72);
+  --text: #f3f7ff;
 
-  --glow:
-    0 0 30px rgba(37,99,235,0.05);
+  --text-soft: #b2c0d6;
+
+  --text-muted: #7f92ad;
+
+  /* BORDER */
+
+  --border:
+    rgba(148,163,184,.14);
+
+  /* COLORS */
+
+  --green: #22ff88;
+  --cyan: #00d9ff;
+  --purple: #9f67ff;
+  --orange: #ffb020;
+  --red: #ff5d67;
+
+  /* SHADOW */
+
+  --shadow:
+    0 16px 40px
+    rgba(0,0,0,.42);
 
   --card-shadow:
-    0 10px 28px rgba(15,23,42,0.06);
+    0 12px 32px
+    rgba(0,0,0,.28);
 
-  --chart-grid:
-    rgba(15,23,42,0.08);
+  --glow:
+    0 0 24px
+    rgba(0,217,255,.12);
 
-  --tooltip-bg:
-    rgba(255,255,255,0.95);
+  --hover-glow:
+    0 12px 40px
+    rgba(0,217,255,.18);
+}
+
+/* =========================
+   LIGHT MODE
+========================= */
+
+:root[data-theme="light"] {
+
+  /* BACKGROUND */
+
+  --bg-solid: #eef4fb;
+
+  --bg-gradient:
+    radial-gradient(
+      circle at top right,
+      rgba(14,165,233,.08),
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(34,197,94,.05),
+      transparent 24%
+    ),
+    linear-gradient(
+      180deg,
+      #f8fbff 0%,
+      #edf3fb 55%,
+      #e9f0f8 100%
+    );
+
+  /* SURFACE */
+
+  --surface:
+    rgba(255,255,255,.92);
+
+  --surface-2:
+    rgba(248,250,252,.98);
+
+  --card-bg:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.95),
+      rgba(248,250,252,.98)
+    );
+
+  --sidebar-bg:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.96),
+      rgba(243,247,252,.98)
+    );
+
+  --topbar-bg:
+    rgba(255,255,255,.72);
+
+  /* TEXT */
+
+  --text: #182433;
+
+  --text-soft: #64748b;
+
+  --text-muted: #94a3b8;
+
+  /* BORDER */
+
+  --border:
+    rgba(148,163,184,.18);
+
+  /* COLORS */
+
+  --green: #22c55e;
+  --cyan: #0ea5e9;
+  --purple: #8b5cf6;
+  --orange: #f59e0b;
+  --red: #ef4444;
+
+  /* SHADOW */
+
+  --shadow:
+    0 12px 28px
+    rgba(15,23,42,.08);
+
+  --card-shadow:
+    0 10px 26px
+    rgba(15,23,42,.06);
+
+  --glow:
+    0 0 20px
+    rgba(14,165,233,.05);
+
+  --hover-glow:
+    0 12px 28px
+    rgba(14,165,233,.10);
 }
