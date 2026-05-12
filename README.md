@@ -65,6 +65,11 @@ pip install -r backend/requirements.txt
 uvicorn backend.app.main:app --reload
 ```
 
+For LAN access from other devices on the same network, run:
+```bash
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
 Expected local URLs:
 - `http://127.0.0.1:8000/health`
 - `http://127.0.0.1:8000/api/load`
@@ -78,6 +83,44 @@ Expected local URLs:
 - `http://127.0.0.1:8000/api/forecast`
 - `http://127.0.0.1:8000/api/impact`
 - `http://127.0.0.1:8000/docs`
+
+## Frontend Setup (Vite)
+
+From the `frontend` folder:
+
+1. Create `frontend/.env` (or copy from `frontend/.env.example`) and set:
+```text
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+2. Install dependencies and run:
+```bash
+npm install
+npm run dev
+```
+
+## LAN Development (Frontend + Backend)
+
+1. Start backend on all interfaces:
+```bash
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+Optional but recommended for credentialed requests, set backend CORS origins before running backend:
+```bash
+# Windows PowerShell example
+$env:CORS_ORIGINS="http://localhost:5173,http://127.0.0.1:5173,http://<HOST_LAN_IP>:5173"
+```
+2. Set `frontend/.env`:
+```text
+VITE_API_BASE_URL=http://<HOST_LAN_IP>:8000
+```
+3. Start frontend from `frontend`:
+```bash
+npm run dev -- --host 0.0.0.0
+```
+4. Open from another device:
+```text
+http://<HOST_LAN_IP>:5173
+```
 
 ## Not in MVP
 
