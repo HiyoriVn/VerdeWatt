@@ -14,18 +14,18 @@ import {
   getLoad,
   getSessions,
   runAllocation,
-} from "../services/api";
+} from "../../services/api";
 
-import AllocationSummary from "../components/AllocationSummary";
-import ChargerCommandPanel from "../components/ChargerCommandPanel";
-import EVSessionCard from "../components/EVSessionCard";
-import ForecastChart from "../components/ForecastChart";
-import ImpactCards from "../components/ImpactCards";
-import KPICards from "../components/KPICards";
-import LoadCurveChart from "../components/LoadCurveChart";
-import ScheduleRecommendations from "../components/ScheduleRecommendations";
-import SecurityAlertFeed from "../components/SecurityAlertFeed";
-import VehicleLookup from "../components/VehicleLookup";
+import AllocationSummary from "../../components/dashboard/AllocationSummary";
+import ChargerCommandPanel from "../../components/dashboard/ChargerCommandPanel";
+import ForecastChart from "../../components/dashboard/ForecastChart";
+import ImpactCards from "../../components/dashboard/ImpactCards";
+import KPICards from "../../components/dashboard/KPICards";
+import LoadCurveChart from "../../components/dashboard/LoadCurveChart";
+import ScheduleRecommendations from "../../components/dashboard/ScheduleRecommendations";
+import SecurityAlertFeed from "../../components/dashboard/SecurityAlertFeed";
+import EVSessionCard from "../../components/charging/EVSessionCard";
+import VehicleLookup from "../../components/charging/VehicleLookup";
 
 const TAB_DETAILS = {
   dashboard: {

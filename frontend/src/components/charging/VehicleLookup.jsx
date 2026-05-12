@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { getVehicle } from "../services/api";
+import { getVehicle } from "../../services/api";
 
 function VehicleLookup() {
   const [vehicleCode, setVehicleCode] = useState("EV_001");

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { getSchedule } from "../services/api";
+import { getSchedule } from "../../services/api";
 
 function ScheduleRecommendations() {
   const [rows, setRows] = useState([]);

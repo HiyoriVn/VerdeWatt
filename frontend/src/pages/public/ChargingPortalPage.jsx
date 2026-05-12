@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   getVehicle,
   submitChargingRequest,
-} from "../services/api";
+} from "../../services/api";
 
 const INITIAL_FORM = {
   vehicle_id: "EV_001",

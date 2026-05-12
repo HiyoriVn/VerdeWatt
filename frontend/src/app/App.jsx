@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-import Dashboard from "./pages/Dashboard";
-import LandingPage from "./pages/LandingPage";
-import ChargingPortalPage from "./pages/ChargingPortalPage";
-import StaffLoginPage from "./pages/StaffLoginPage";
-import AppShell from "./components/layout/AppShell";
+import Dashboard from "../pages/staff/Dashboard";
+import LandingPage from "../pages/public/LandingPage";
+import ChargingPortalPage from "../pages/public/ChargingPortalPage";
+import StaffLoginPage from "../pages/public/StaffLoginPage";
+import AppShell from "../components/layout/AppShell";
 
 const DEFAULT_TAB = "dashboard";
 const DEFAULT_VIEW = "landing";
