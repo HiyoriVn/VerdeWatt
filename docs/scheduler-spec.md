@@ -2,45 +2,38 @@
 
 ## Purpose
 
-The scheduler turns optimizer output into practical per-vehicle recommendations.
-It is designed for:
+Provide user-facing charging scheduling APIs for:
 
-- Vehicle Lookup views
-- Dashboard recommendation cards
+1. showing recommendation lists for existing sessions,
+2. registering one user charging request and returning a recommendation.
 
 This is rule-based simulation only (no real charger control).
 
-## Endpoint
+## Endpoints
 
 - `GET /api/schedule`
+- `POST /api/charging-request`
 
-## Query Parameter
+## 1) GET /api/schedule
+
+Returns schedule recommendations for existing EV sessions.
+
+### Query Parameter
 
 - `preference` (optional)
-  - `cheapest`: prefers lower-cost off-peak charging when possible
-  - `fastest`: prefers earliest safe slot
-  - `balanced` (default): balances deadline urgency and cost
+  - `cheapest`
+  - `fastest`
+  - `balanced` (default)
 
-If an unsupported value is provided, scheduler falls back to `balanced`.
+### Response Shape
 
-## Data Inputs
-
-Scheduler uses:
-
-1. `data/ev_sessions_sample.json`
-2. optimizer result from `ai/optimizer.py` via `run_optimizer()`
-
-## Output
-
-Returns a list of recommendation objects.
-
-Each object includes:
+Returns a list of objects with:
 
 - `vehicle_id`
 - `current_soc`
 - `target_soc`
 - `priority`
-- `status`: `charging_now` / `scheduled_offpeak` / `delayed_for_safety` / `completed` / `needs_attention`
+- `status`
 - `recommended_action`
 - `scheduled_start_hour`
 - `estimated_completion_hour`
@@ -48,66 +41,59 @@ Each object includes:
 - `estimated_saving_vnd`
 - `user_message`
 
-## Core Rules
+## 2) POST /api/charging-request
 
-1. **Urgent vehicles first**
-   - Urgent EVs prefer earlier safe slots.
-2. **Flexible vehicles off-peak**
-   - Flexible EVs are shifted to off-peak where possible.
-   - Preferred off-peak start is around `23:00` when that slot exists.
-3. **Suspicious vehicles**
-   - Sessions like `EV_999` are marked `needs_attention`.
-4. **Preference modes**
-   - `cheapest`: prioritize off-peak tariff slots
-   - `fastest`: prioritize earliest safe slot
-   - `balanced`: urgent early, flexible off-peak if possible
+Registers one user charging request and returns one recommendation.
+
+### Request Body
+
+```json
+{
+  "vehicle_id": "EV_123",
+  "current_soc": 25,
+  "target_soc": 80,
+  "battery_kwh": 60,
+  "deadline_hour": 7,
+  "preference": "fastest"
+}
+```
+
+### Response Body
+
+```json
+{
+  "vehicle_id": "EV_123",
+  "status": "scheduled_offpeak",
+  "recommended_action": "Schedule for off-peak charging",
+  "scheduled_start_hour": 23,
+  "estimated_completion_hour": 6,
+  "estimated_cost_vnd": 31000,
+  "estimated_saving_vnd": 11000,
+  "user_message": "Your vehicle is scheduled for off-peak charging to reduce cost and avoid building overload."
+}
+```
+
+## Scheduling Rules
+
+1. Urgent deadline or `fastest` preference -> earliest safe slot.
+2. `cheapest` preference -> prefer off-peak around `23:00`.
+3. `balanced` preference -> balance deadline reliability and off-peak cost.
+4. Suspicious vehicles like `EV_999` -> `needs_attention`.
+5. Cost uses current MVP tariff assumptions (`peak` vs `off-peak`).
 
 ## Cost Assumptions
 
-Simple simulation tariffs:
-
-- Peak tariff: `3500 VND/kWh` (hours 18-22)
+- Peak tariff: `3500 VND/kWh` (hours `18-22`)
 - Off-peak tariff: `1800 VND/kWh`
 
-Per-EV cost and savings are estimates:
-
-- `estimated_cost_vnd`: based on allocated charging hours and tariffs
-- `estimated_saving_vnd`: compared against a simple peak-tariff baseline
-
-## Example Response
-
-```json
-[
-  {
-    "vehicle_id": "EV_001",
-    "current_soc": 22.0,
-    "target_soc": 80.0,
-    "priority": "urgent",
-    "status": "charging_now",
-    "recommended_action": "Charge now in the earliest safe slot to protect deadline reliability.",
-    "scheduled_start_hour": 0,
-    "estimated_completion_hour": 3,
-    "estimated_cost_vnd": 62640.0,
-    "estimated_saving_vnd": 59160.0,
-    "user_message": "Charging can start now while staying under safe building capacity."
-  },
-  {
-    "vehicle_id": "EV_999",
-    "current_soc": 44.0,
-    "target_soc": 86.0,
-    "priority": "normal",
-    "status": "needs_attention",
-    "recommended_action": "Pause auto-charging and verify this session manually before continuing.",
-    "scheduled_start_hour": null,
-    "estimated_completion_hour": null,
-    "estimated_cost_vnd": 0.0,
-    "estimated_saving_vnd": 0.0,
-    "user_message": "This vehicle has suspicious behavior and needs manual review for safety."
-  }
-]
-```
+`estimated_saving_vnd` is compared against a simple peak-tariff baseline.
 
 ## Notes
 
-- This endpoint is for recommendation simulation in MVP UI.
-- No auth, real payment, database, Docker, LSTM, or full OCPP integration is included.
+- No login/auth.
+- No database.
+- No real payment.
+- No full OCPP.
+- No Docker.
+- No WebSocket.
+- No deep learning or heavy dependencies.

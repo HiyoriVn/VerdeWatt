@@ -12,4 +12,5 @@ def get_schedule(
         description="Scheduling mode: cheapest, fastest, or balanced.",
     )
 ) -> list[dict]:
+    """Return per-vehicle schedule recommendations for frontend display."""
     return generate_schedule_recommendations(preference=preference)

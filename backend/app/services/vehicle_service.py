@@ -2,6 +2,7 @@ from backend.app.services.schedule_service import generate_schedule_recommendati
 
 
 def get_vehicle_recommendation(vehicle_id: str) -> dict | None:
+    """Return a single recommendation from the schedule list."""
     target = vehicle_id.strip().lower()
     recommendations = generate_schedule_recommendations(preference="balanced")
 

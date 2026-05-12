@@ -6,20 +6,19 @@
 
 ## Purpose
 
-Look up one EV by vehicle code and return its latest charging recommendation from the scheduler.
+Look up one EV by vehicle code and return its latest charging recommendation.
 
 This endpoint is useful for:
 
+- user status lookup after submitting `POST /api/charging-request`
 - vehicle lookup search box
 - driver-facing status panel
 - quick support/operator checks
 
 ## Data Source
 
-The route uses:
-
-- `backend/app/services/scheduler.py`
-- scheduler output generated from sample sessions + optimizer result
+The route uses `backend/app/services/vehicle_service.py`, which reads the
+current recommendation list from `GET /api/schedule` logic.
 
 ## Matching Rule
 
@@ -74,5 +73,6 @@ If vehicle code does not exist:
 
 ## Notes
 
-- MVP simulation only.
-- No login/auth, database, real payment, full OCPP, Docker, or heavy dependencies.
+- Endpoint is read-only and case-insensitive.
+- Returns HTTP 404 with `{ "detail": "Vehicle code not found" }` when missing.
+- MVP simulation only (no login/auth, database, real payment, full OCPP, Docker, or heavy dependencies).
