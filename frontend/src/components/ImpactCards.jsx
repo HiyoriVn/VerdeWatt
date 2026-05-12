@@ -1,77 +1,57 @@
 function toNumber(value) {
-  return Number(value ?? 0);
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function ImpactCards({
-  billing,
-  allocation,
-}) {
-  if (!billing) {
+function formatNumber(value, digits = 2) {
+  return toNumber(value).toLocaleString(
+    undefined,
+    {
+      maximumFractionDigits: digits,
+    }
+  );
+}
+
+function ImpactCards({ impact }) {
+  if (!impact) {
     return (
       <>
         <h3>Green Impact Metrics</h3>
         <p className="muted-text">
-          Billing data is required to estimate
-          environmental impact.
+          Impact data is not available yet.
         </p>
       </>
     );
   }
 
-  const shiftedKwh = toNumber(billing.shifted_kwh);
-  const totalKwh = toNumber(billing.total_kwh);
-  const offPeakKwh = toNumber(billing.offpeak_kwh);
-
-  const emissionFactorKgPerKwh = 0.72;
-
-  const co2AvoidedKg = shiftedKwh * emissionFactorKgPerKwh;
-  const offPeakRatio =
-    totalKwh > 0
-      ? (offPeakKwh / totalKwh) * 100
-      : 0;
-
-  const peakReduction = toNumber(
-    allocation?.peak_reduction_percent
-  );
-
-  const treeEquivalent = co2AvoidedKg / 21;
-
   const items = [
     {
+      label: "CO2 Avoided",
+      value: `${formatNumber(
+        impact.co2_saved_kg,
+        2
+      )} kg`,
+    },
+    {
+      label: "Trees Equivalent",
+      value: `${formatNumber(
+        impact.trees_equivalent,
+        2
+      )} trees/year`,
+    },
+    {
+      label: "Petrol Equivalent",
+      value: `${formatNumber(
+        impact.petrol_equivalent_liters,
+        2
+      )} liters`,
+    },
+    {
       label: "Shifted Energy",
-      value: `${shiftedKwh.toLocaleString(undefined, {
-        maximumFractionDigits: 2,
-      })} kWh`,
-    },
-    {
-      label: "Estimated CO2 Avoided",
-      value: `${co2AvoidedKg.toLocaleString(undefined, {
-        maximumFractionDigits: 1,
-      })} kg`,
-    },
-    {
-      label: "Off-peak Share",
-      value: `${offPeakRatio.toLocaleString(undefined, {
-        maximumFractionDigits: 1,
-      })}%`,
-    },
-    {
-      label: "Peak Reduction",
-      value: `${peakReduction.toLocaleString(undefined, {
-        maximumFractionDigits: 2,
-      })}%`,
-    },
-    {
-      label: "Tree Equivalent",
-      value: `${treeEquivalent.toLocaleString(undefined, {
-        maximumFractionDigits: 1,
-      })} trees/year`,
-    },
-    {
-      label: "Estimated Saving",
-      value: `${toNumber(
-        billing.estimated_saving_vnd
-      ).toLocaleString()} VND`,
+      value: `${formatNumber(
+        impact.shifted_kwh,
+        2
+      )} kWh`,
     },
   ];
 
@@ -79,8 +59,8 @@ function ImpactCards({
     <>
       <h3>Green Impact Metrics</h3>
       <p className="muted-text">
-        Sustainability indicators derived from
-        billing and allocation results.
+        Prototype estimate based on configurable
+        emission factors.
       </p>
 
       <div className="impact-grid">

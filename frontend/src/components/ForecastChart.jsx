@@ -9,21 +9,44 @@ import {
   YAxis,
 } from "recharts";
 
-function weightedMovingAverage(values, index) {
-  const current = Number(values[index] ?? 0);
-  const prev1 = Number(values[index - 1] ?? current);
-  const prev2 = Number(values[index - 2] ?? prev1);
-
-  return (
-    prev2 * 0.2 + prev1 * 0.3 + current * 0.5
-  );
+function toNumber(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function ForecastChart({ loadData = [] }) {
-  if (!loadData.length) {
+function ForecastChart({
+  forecast,
+  loadData = [],
+}) {
+  const predictions = Array.isArray(
+    forecast?.predictions
+  )
+    ? forecast.predictions
+    : [];
+
+  const chartData = predictions.map((item) => ({
+    hour: item.hour,
+    predicted_base_load_kw: toNumber(
+      item.predicted_base_load_kw
+    ),
+  }));
+
+  const featureImportance = Array.isArray(
+    forecast?.feature_importance
+  )
+    ? [...forecast.feature_importance]
+        .sort(
+          (a, b) =>
+            toNumber(b?.importance) -
+            toNumber(a?.importance)
+        )
+        .slice(0, 3)
+    : [];
+
+  if (!chartData.length && !loadData.length) {
     return (
       <>
-        <h3>Forecast Chart</h3>
+        <h3>Forecast Trend</h3>
         <p className="muted-text">
           Forecast data is not available yet.
         </p>
@@ -31,35 +54,51 @@ function ForecastChart({ loadData = [] }) {
     );
   }
 
-  const unmanagedSeries = loadData.map((row) =>
-    Number(row.base_load_kw ?? 0) +
-    Number(row.unmanaged_ev_load_kw ?? 0)
-  );
-
-  const forecastData = loadData.map((row, index) => ({
+  const fallbackData = loadData.map((row) => ({
     hour: row.hour,
-    unmanaged_total_load_kw: unmanagedSeries[index],
-    forecast_total_load_kw: weightedMovingAverage(
-      unmanagedSeries,
-      index
-    ),
-    safe_capacity_kw: Number(
-      row.safe_capacity_kw ?? 0
+    predicted_base_load_kw: toNumber(
+      row.base_load_kw
     ),
   }));
+
+  const dataToRender = chartData.length
+    ? chartData
+    : fallbackData;
+  const modelName =
+    forecast?.model || "Forecast API unavailable";
 
   return (
     <>
       <h3>Forecast Trend</h3>
       <p className="muted-text">
-        Weighted moving average forecast for
-        unmanaged total load.
+        Model: {modelName}
       </p>
+
+      {!chartData.length && (
+        <p className="muted-text">
+          Showing base load fallback while
+          backend forecast is unavailable.
+        </p>
+      )}
+
+      {featureImportance.length > 0 && (
+        <p className="muted-text">
+          Top features:{" "}
+          {featureImportance
+            .map(
+              (item) =>
+                `${item.feature} (${toNumber(
+                  item.importance
+                ).toFixed(4)})`
+            )
+            .join(", ")}
+        </p>
+      )}
 
       <div className="forecast-chart-wrap">
         <ResponsiveContainer>
           <LineChart
-            data={forecastData}
+            data={dataToRender}
             margin={{
               top: 10,
               right: 18,
@@ -99,29 +138,10 @@ function ForecastChart({ loadData = [] }) {
 
             <Line
               type="monotone"
-              dataKey="unmanaged_total_load_kw"
-              name="Unmanaged Total"
-              stroke="#8b5cf6"
-              strokeWidth={2}
-              dot={false}
-            />
-
-            <Line
-              type="monotone"
-              dataKey="forecast_total_load_kw"
-              name="Forecast Total"
+              dataKey="predicted_base_load_kw"
+              name="Predicted Base Load"
               stroke="#06b6d4"
               strokeWidth={3}
-              dot={false}
-            />
-
-            <Line
-              type="monotone"
-              dataKey="safe_capacity_kw"
-              name="Safe Capacity"
-              stroke="#22c55e"
-              strokeDasharray="6 4"
-              strokeWidth={2}
               dot={false}
             />
           </LineChart>

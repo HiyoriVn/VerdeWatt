@@ -104,6 +104,22 @@ export function getBilling() {
 }
 
 /* =========================
+   FORECAST
+========================= */
+
+export function getForecast() {
+  return request("/api/forecast");
+}
+
+/* =========================
+   IMPACT
+========================= */
+
+export function getImpact() {
+  return request("/api/impact");
+}
+
+/* =========================
    SCHEDULE
 ========================= */
 

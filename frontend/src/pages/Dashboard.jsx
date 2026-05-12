@@ -9,6 +9,8 @@ import {
 import {
   getAlerts,
   getBilling,
+  getForecast,
+  getImpact,
   getLoad,
   getSessions,
   runAllocation,
@@ -73,6 +75,8 @@ export default function Dashboard({
   const [allocation, setAllocation] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [billing, setBilling] = useState(null);
+  const [forecast, setForecast] = useState(null);
+  const [impact, setImpact] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [failedSections, setFailedSections] =
@@ -120,6 +124,16 @@ export default function Dashboard({
           label: "billing KPIs",
           execute: getBilling,
         },
+        {
+          key: "forecast",
+          label: "AI forecast",
+          execute: getForecast,
+        },
+        {
+          key: "impact",
+          label: "green impact",
+          execute: getImpact,
+        },
       ];
 
       const results = await Promise.allSettled(
@@ -156,6 +170,14 @@ export default function Dashboard({
             setBilling(null);
           }
 
+          if (requestItem.key === "forecast") {
+            setForecast(null);
+          }
+
+          if (requestItem.key === "impact") {
+            setImpact(null);
+          }
+
           return;
         }
 
@@ -189,6 +211,14 @@ export default function Dashboard({
 
         if (requestItem.key === "billing") {
           setBilling(result.value || null);
+        }
+
+        if (requestItem.key === "forecast") {
+          setForecast(result.value || null);
+        }
+
+        if (requestItem.key === "impact") {
+          setImpact(result.value || null);
         }
       });
 
@@ -326,23 +356,12 @@ export default function Dashboard({
         <section className="card glass-card">
           <ForecastChart
             loadData={loadData}
-            allocation={allocation}
+            forecast={forecast}
           />
         </section>
 
         <section className="card glass-card">
-          <ImpactCards
-            billing={billing}
-            allocation={allocation}
-          />
-        </section>
-
-        <section className="card glass-card">
-          <h3>Feature Importance (TODO)</h3>
-          <p className="muted-text">
-            Add model explainability inputs when
-            backend feature signals are available.
-          </p>
+          <ImpactCards impact={impact} />
         </section>
       </div>
     );
