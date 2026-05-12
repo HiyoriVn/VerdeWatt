@@ -1,7 +1,7 @@
-"""Mock OCPP-compatible charger command generator for VerdeWatt MVP.
+"""Generate mock OCPP-like control commands from security alerts.
 
-This module does NOT implement real OCPP communication. It only returns
-simple command payloads that frontend/demo logic can display.
+This module is intentionally mock-only for MVP demos. It does not implement
+real OCPP sessions, WebSocket communication, or charger hardware control.
 """
 
 from __future__ import annotations
@@ -9,135 +9,117 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from backend.app.services.anomaly_detector import generate_sample_alerts
-from backend.app.services.scheduler import generate_schedule_recommendations
 
 
-def _charger_id_for_vehicle(vehicle_id: str) -> str:
-    """Map vehicle IDs like EV_001 to mock charger IDs like CHG_01."""
-    suffix = "".join(ch for ch in vehicle_id if ch.isdigit())
-    if not suffix:
+MOCK_NOTE = "MVP mock command, not a real OCPP implementation"
+
+
+def _charger_id_from_ev(ev_id: str | None) -> str:
+    """Map EV IDs like EV_006 to demo charger IDs like CHG_06."""
+    if not ev_id:
         return "CHG_00"
-    return f"CHG_{int(suffix) % 100:02d}"
+
+    digits = "".join(char for char in ev_id if char.isdigit())
+    if not digits:
+        return "CHG_00"
+
+    return f"CHG_{int(digits) % 100:02d}"
 
 
-def _suspicious_ev_ids(alerts: List[Dict[str, Any]]) -> set[str]:
-    """Collect EV IDs that look suspicious from security alerts."""
-    suspicious: set[str] = set()
+def _build_command(
+    *,
+    charger_id: str,
+    command: str,
+    reason: str,
+    related_ev_id: str | None = None,
+    max_current_amp: int | None = None,
+) -> Dict[str, Any]:
+    """Build standard mock command output."""
+    payload: Dict[str, Any] = {
+        "charger_id": charger_id,
+        "related_ev_id": related_ev_id,
+        "command": command,
+        "reason": reason,
+        "status": "mock_only",
+        "note": MOCK_NOTE,
+    }
 
-    for alert in alerts:
-        related_session_id = alert.get("related_session_id")
-        title = str(alert.get("title", "")).lower()
+    if max_current_amp is not None:
+        payload["max_current_amp"] = max_current_amp
 
-        if related_session_id and (
-            "abnormal power" in title or "suspicious" in title
-        ):
-            suspicious.add(str(related_session_id))
-
-    return suspicious
+    return payload
 
 
-def generate_mock_charger_commands(preference: str = "balanced") -> List[Dict[str, Any]]:
-    """Generate mock OCPP-style charger commands from scheduler + alerts."""
-    schedule_items = generate_schedule_recommendations(preference=preference)
-    alerts = generate_sample_alerts()
-    suspicious_evs = _suspicious_ev_ids(alerts)
-
+def generate_mock_charger_commands(alerts: List[Dict[str, Any]] | None = None) -> List[Dict[str, Any]]:
+    """Convert anomaly alerts into mock OCPP-compatible command payloads."""
+    source_alerts = alerts if alerts is not None else generate_sample_alerts()
     commands: List[Dict[str, Any]] = []
 
-    for item in schedule_items:
-        vehicle_id = str(item.get("vehicle_id", "UNKNOWN"))
-        priority = str(item.get("priority", "normal")).lower()
-        status = str(item.get("status", "charging_now"))
-        charger_id = _charger_id_for_vehicle(vehicle_id)
-
-        if vehicle_id in suspicious_evs or vehicle_id.upper().endswith("999"):
-            commands.append(
-                {
-                    "charger_id": charger_id,
-                    "related_ev_id": vehicle_id,
-                    "command": "RemoteStopTransaction",
-                    "reason": "Abnormal power request detected",
-                }
-            )
-            continue
-
-        if status == "completed":
-            commands.append(
-                {
-                    "charger_id": charger_id,
-                    "related_ev_id": vehicle_id,
-                    "command": "SetChargingProfile",
-                    "max_current_amp": 0,
-                    "reason": "Charging target already completed",
-                }
-            )
-            continue
-
-        if status == "delayed_for_safety":
-            commands.append(
-                {
-                    "charger_id": charger_id,
-                    "related_ev_id": vehicle_id,
-                    "command": "SetChargingProfile",
-                    "max_current_amp": 6,
-                    "reason": "Building load near safe capacity",
-                }
-            )
-            continue
-
-        if priority == "flexible" or status == "scheduled_offpeak":
-            start_hour = item.get("scheduled_start_hour")
-            commands.append(
-                {
-                    "charger_id": charger_id,
-                    "related_ev_id": vehicle_id,
-                    "command": "SetChargingProfile",
-                    "max_current_amp": 8,
-                    "reason": (
-                        "Flexible EV shifted to off-peak window"
-                        if start_hour is None
-                        else f"Flexible EV shifted to off-peak around {int(start_hour):02d}:00"
-                    ),
-                }
-            )
-            continue
-
-        # Urgent/normal default: faster but still safe charging profile.
-        commands.append(
-            {
-                "charger_id": charger_id,
-                "related_ev_id": vehicle_id,
-                "command": "SetChargingProfile",
-                "max_current_amp": 16,
-                "reason": "Building load near safe capacity",
-            }
-        )
-
-    # Add charger-level commands from non-EV alerts (offline/DoS-like).
-    for alert in alerts:
+    for alert in source_alerts:
+        title = str(alert.get("title", "")).strip().lower()
+        severity = str(alert.get("severity", "")).strip().lower()
+        related_ev_id = alert.get("related_session_id")
         related_charger_id = alert.get("related_charger_id")
-        title = str(alert.get("title", "")).lower()
 
-        if not related_charger_id:
+        if "abnormal power request" in title:
+            target_ev_id = str(related_ev_id) if related_ev_id else "EV_999"
+            # The demo story anchors this threat flow to EV_999 / CHG_09.
+            target_charger_id = "CHG_09"
+            if severity == "high":
+                commands.append(
+                    _build_command(
+                        charger_id=target_charger_id,
+                        related_ev_id=target_ev_id,
+                        command="RemoteStopTransaction",
+                        reason="High-severity abnormal power request detected",
+                    )
+                )
+            else:
+                commands.append(
+                    _build_command(
+                        charger_id=target_charger_id,
+                        related_ev_id=target_ev_id,
+                        command="SetChargingProfile",
+                        max_current_amp=10,
+                        reason="Cap current due to abnormal power request",
+                    )
+                )
             continue
 
-        if "offline" in title:
-            commands.append(
-                {
-                    "charger_id": related_charger_id,
-                    "related_ev_id": None,
-                    "command": "CapPowerAndVerify",
-                    "reason": "Charger offline detected, verify network/device status",
-                }
+        if "charger offline" in title:
+            charger_id = str(related_charger_id) if related_charger_id else "CHG_UNKNOWN"
+            if severity == "high":
+                commands.append(
+                    _build_command(
+                        charger_id=charger_id,
+                        command="ExcludeFromAllocation",
+                        reason="Exclude charger from allocation while offline",
+                    )
+                )
+            else:
+                commands.append(
+                    _build_command(
+                        charger_id=charger_id,
+                        command="InspectCharger",
+                        reason="Inspect charger after offline warning",
+                    )
+                )
+            continue
+
+        if "repeated session" in title:
+            ev_id = str(related_ev_id) if related_ev_id else None
+            charger_id = (
+                str(related_charger_id)
+                if related_charger_id
+                else _charger_id_from_ev(ev_id)
             )
-        elif "dos-like" in title:
             commands.append(
-                {
-                    "charger_id": related_charger_id,
-                    "related_ev_id": None,
-                    "command": "CapPowerAndVerify",
-                    "reason": "High failed ping rate detected",
-                }
+                _build_command(
+                    charger_id=charger_id,
+                    related_ev_id=ev_id,
+                    command="RequireSessionReview",
+                    reason="Repeated session pattern requires manual review",
+                )
             )
 
     return commands

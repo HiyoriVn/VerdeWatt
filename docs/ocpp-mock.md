@@ -2,97 +2,76 @@
 
 ## Purpose
 
-This module provides **OCPP-compatible mock command payloads** for demo/testing.
-It does not open WebSocket connections or talk to real charger hardware.
+`GET /api/charger-commands` converts rule-based anomaly alerts into mock charger
+control actions that look OCPP-compatible for demo flow.
+
+This is not real charger control. There is no WebSocket, no real OCPP session,
+and no hardware integration.
 
 ## Endpoint
 
 - `GET /api/charger-commands`
 
-Optional query:
+## Data Source
 
-- `preference=balanced|fastest|cheapest`
-  - forwarded to scheduler recommendation mode
+- `backend/app/services/anomaly_detector.py` (`generate_sample_alerts`)
 
-## Data Sources
+If alerts are available, command mapping is generated from alert title and
+severity.
 
-Command generation combines:
+## Rule Mapping
 
-1. Scheduler recommendations (`backend/app/services/scheduler.py`)
-2. Security alerts (`backend/app/services/anomaly_detector.py`)
+### 1) Abnormal power request
 
-This allows commands to react to:
+If alert title contains `Abnormal power request`:
 
-- charging urgency/flexibility
-- delayed-for-safety states
-- suspicious EV sessions like `EV_999`
-- charger-level offline/DoS-like alerts
+- command is `RemoteStopTransaction` (high severity) or `SetChargingProfile`
+- anchored to `EV_999` / `CHG_09` for demo consistency
 
-## Command Styles
-
-### 1) Normal load control
-
-Used for urgent/normal vehicles that can safely charge now.
-
-```json
-{
-  "charger_id": "CHG_01",
-  "related_ev_id": "EV_001",
-  "command": "SetChargingProfile",
-  "max_current_amp": 16,
-  "reason": "Building load near safe capacity"
-}
-```
-
-### 2) Flexible off-peak control
-
-Used for flexible vehicles shifted to off-peak windows.
-
-```json
-{
-  "charger_id": "CHG_06",
-  "related_ev_id": "EV_006",
-  "command": "SetChargingProfile",
-  "max_current_amp": 8,
-  "reason": "Flexible EV shifted to off-peak around 23:00"
-}
-```
-
-### 3) Suspicious session protection
-
-Used when abnormal/suspicious behavior is detected.
+Example:
 
 ```json
 {
   "charger_id": "CHG_09",
   "related_ev_id": "EV_999",
   "command": "RemoteStopTransaction",
-  "reason": "Abnormal power request detected"
+  "reason": "High-severity abnormal power request detected",
+  "status": "mock_only",
+  "note": "MVP mock command, not a real OCPP implementation"
 }
 ```
 
-### 4) Charger health protection (mock)
+### 2) Charger offline
 
-Used for charger-level security alerts (offline/DoS-like).
+If alert title contains `Charger offline`:
 
-```json
-{
-  "charger_id": "CHG-B2",
-  "related_ev_id": null,
-  "command": "CapPowerAndVerify",
-  "reason": "Charger offline detected, verify network/device status"
-}
-```
+- command is `ExcludeFromAllocation` (high severity) or `InspectCharger`
+- targets `related_charger_id` from the alert when available
 
-## Rule Summary
+### 3) Repeated session
 
-- Urgent/normal vehicles -> `SetChargingProfile` (higher current profile)
-- Flexible vehicles -> `SetChargingProfile` with lower current and off-peak reason
-- Suspicious vehicles (`EV_999` or flagged by alerts) -> `RemoteStopTransaction`
-- Charger offline/DoS-like alerts -> `CapPowerAndVerify`
+If alert title contains `Repeated session`:
 
-## Important Notes
+- command is `RequireSessionReview`
+- includes `related_ev_id` when available
 
-- This is mock-only behavior for MVP demos.
-- No real OCPP communication, no WebSocket, and no charger hardware integration.
-- No auth, database, payment, Docker, or LSTM added.
+## Command Payload Fields
+
+Each command includes:
+
+- `charger_id`
+- `related_ev_id` (nullable)
+- `command`
+- `reason`
+- `status` = `mock_only`
+- `note` = `MVP mock command, not a real OCPP implementation`
+- `max_current_amp` only when current capping is relevant
+
+## MVP Scope Guardrails
+
+- No real OCPP protocol handling
+- No WebSocket channel
+- No authentication
+- No database persistence
+- No payment integration
+- No Docker or heavy dependencies
