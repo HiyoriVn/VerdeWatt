@@ -3,23 +3,17 @@
 from __future__ import annotations
 
 import csv
-from pathlib import Path
 from typing import Any, Dict, List
 
 from ai.optimizer import run_optimizer
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-LOAD_CSV_PATH = PROJECT_ROOT / "data" / "synthetic_building_load.csv"
-SESSIONS_JSON_PATH = PROJECT_ROOT / "data" / "ev_sessions_sample.json"
-
-# Simple tariff assumptions (VND/kWh)
-PEAK_TARIFF_VND_PER_KWH = 3500
-OFFPEAK_TARIFF_VND_PER_KWH = 1800
-INCENTIVE_VND_PER_SHIFTED_KWH = 500
-
-# Peak period used for this simulation.
-PEAK_HOURS = {18, 19, 20, 21, 22}
+from backend.app.core.constants import (
+    INCENTIVE_VND_PER_SHIFTED_KWH,
+    LOAD_CSV_PATH,
+    OFFPEAK_TARIFF_VND_PER_KWH,
+    PEAK_HOURS,
+    PEAK_TARIFF_VND_PER_KWH,
+    SESSIONS_JSON_PATH,
+)
 
 
 def _load_unmanaged_ev_profile() -> Dict[int, float]:

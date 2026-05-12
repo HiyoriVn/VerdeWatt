@@ -1,13 +1,10 @@
 import csv
-from pathlib import Path
 
 from fastapi import APIRouter
 
+from backend.app.core.constants import LOAD_CSV_PATH
+
 router = APIRouter(prefix="/api", tags=["load"])
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-LOAD_CSV_PATH = PROJECT_ROOT / "data" / "synthetic_building_load.csv"
 
 
 @router.get("/load")

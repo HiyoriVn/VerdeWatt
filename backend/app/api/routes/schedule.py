@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 
-from backend.app.services.scheduler import generate_schedule_recommendations
+from backend.app.services.schedule_service import generate_schedule_recommendations
 
 router = APIRouter(prefix="/api", tags=["schedule"])
 

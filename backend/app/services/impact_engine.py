@@ -8,12 +8,12 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from backend.app.services.billing_engine import simulate_billing_kpis
-
-
-VIETNAM_GRID_EMISSION_FACTOR_KG_CO2_PER_KWH = 0.4715
-TREE_CO2_ABSORPTION_KG_PER_YEAR = 21.77
-PETROL_CO2_KG_PER_LITER = 2.31
+from backend.app.core.constants import (
+    PETROL_CO2_KG_PER_LITER,
+    TREE_CO2_ABSORPTION_KG_PER_YEAR,
+    VIETNAM_GRID_EMISSION_FACTOR_KG_CO2_PER_KWH,
+)
+from backend.app.services.billing_service import simulate_billing_kpis
 
 
 def generate_impact_metrics() -> Dict[str, Any]:

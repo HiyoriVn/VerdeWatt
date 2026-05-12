@@ -1,13 +1,10 @@
 import json
-from pathlib import Path
 
 from fastapi import APIRouter
 
+from backend.app.core.constants import SESSIONS_JSON_PATH
+
 router = APIRouter(prefix="/api", tags=["sessions"])
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-SESSIONS_JSON_PATH = PROJECT_ROOT / "data" / "ev_sessions_sample.json"
 
 
 @router.get("/sessions")

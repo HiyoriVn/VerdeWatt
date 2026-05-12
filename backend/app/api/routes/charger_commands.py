@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from backend.app.services.ocpp_mock import generate_mock_charger_commands
+from backend.app.services.charger_command_service import generate_mock_charger_commands
 
 router = APIRouter(prefix="/api", tags=["charger-commands"])
 

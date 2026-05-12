@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from backend.app.services.billing_engine import simulate_billing_kpis
+from backend.app.services.billing_service import simulate_billing_kpis
 
 router = APIRouter(prefix="/api", tags=["billing"])
 

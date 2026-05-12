@@ -5,6 +5,22 @@
 - Base URL: `http://127.0.0.1:8000`
 - Swagger docs: `http://127.0.0.1:8000/docs`
 
+## Backend Organization Note
+
+Internal route modules are organized under:
+
+```text
+backend/app/api/routes/
+```
+
+and aggregated through:
+
+```text
+backend/app/api/router.py
+```
+
+API endpoint paths remain unchanged.
+
 ## MVP Constraints
 
 This API spec is for the hackathon MVP only.
@@ -499,12 +515,6 @@ This endpoint combines EV session data and optimizer output to produce user-faci
 
 None.
 
-Optional query parameter:
-
-```text
-preference=balanced|fastest|cheapest
-```
-
 ## Example Response
 
 ```json
@@ -652,13 +662,12 @@ preference=balanced|fastest|cheapest
 
 * `charger_id`: mock charger identifier.
 * `related_ev_id`: related vehicle ID, if applicable.
-* `command`: mock command name (`SetChargingProfile`, `RemoteStopTransaction`, `CapPowerAndVerify`).
+* `command`: mock command name (`SetChargingProfile`, `RemoteStopTransaction`, `ExcludeFromAllocation`, `InspectCharger`, `RequireSessionReview`).
 * `max_current_amp`: current cap for profile-based commands.
 * `reason`: explanation for why this command was generated.
 
 ## Error Behavior
 
-* Unsupported preference values are handled by scheduler fallback logic.
 * Standard API failures return:
 
 ```json

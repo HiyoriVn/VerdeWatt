@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from backend.app.services.anomaly_detector import generate_sample_alerts
+from backend.app.services.security_service import generate_sample_alerts
 
 router = APIRouter(prefix="/api", tags=["alerts"])
 

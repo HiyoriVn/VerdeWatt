@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from backend.app.services.impact_engine import generate_impact_metrics
+from backend.app.services.impact_service import generate_impact_metrics
 
 router = APIRouter(prefix="/api", tags=["impact"])
 

@@ -8,22 +8,17 @@ from __future__ import annotations
 
 from datetime import datetime
 import json
-from pathlib import Path
 from typing import Any, Dict, List
 
 from ai.optimizer import run_optimizer
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-SESSIONS_JSON_PATH = PROJECT_ROOT / "data" / "ev_sessions_sample.json"
-LOAD_CSV_PATH = PROJECT_ROOT / "data" / "synthetic_building_load.csv"
-
-# Tariff assumptions reused for simple per-EV estimates.
-PEAK_TARIFF_VND_PER_KWH = 3500
-OFFPEAK_TARIFF_VND_PER_KWH = 1800
-PEAK_HOURS = {18, 19, 20, 21, 22}
-
-ALLOWED_PREFERENCES = {"cheapest", "fastest", "balanced"}
+from backend.app.core.constants import (
+    ALLOWED_SCHEDULE_PREFERENCES,
+    LOAD_CSV_PATH,
+    OFFPEAK_TARIFF_VND_PER_KWH,
+    PEAK_HOURS,
+    PEAK_TARIFF_VND_PER_KWH,
+    SESSIONS_JSON_PATH,
+)
 
 
 def _load_sessions() -> List[Dict[str, Any]]:
@@ -63,7 +58,7 @@ def _build_allocation_map(hourly_allocations: List[Dict[str, Any]]) -> Dict[str,
 def _normalize_preference(preference: str) -> str:
     """Fallback to balanced when unsupported preference is sent."""
     value = str(preference or "").lower()
-    return value if value in ALLOWED_PREFERENCES else "balanced"
+    return value if value in ALLOWED_SCHEDULE_PREFERENCES else "balanced"
 
 
 def _choose_start_hour(

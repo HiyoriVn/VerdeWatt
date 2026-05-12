@@ -1,15 +1,9 @@
-from pathlib import Path
-
 from fastapi import APIRouter
 
 from ai.optimizer import run_optimizer
+from backend.app.core.constants import LOAD_CSV_PATH, SESSIONS_JSON_PATH
 
 router = APIRouter(prefix="/api", tags=["allocate"])
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-LOAD_CSV_PATH = PROJECT_ROOT / "data" / "synthetic_building_load.csv"
-SESSIONS_JSON_PATH = PROJECT_ROOT / "data" / "ev_sessions_sample.json"
 
 
 def _build_allocate_response() -> dict:

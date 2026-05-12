@@ -1,19 +1,8 @@
-import os
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.routes.allocate import router as allocate_router
-from backend.app.routes.alerts import router as alerts_router
-from backend.app.routes.billing import router as billing_router
-from backend.app.routes.charger_commands import router as charger_commands_router
-from backend.app.routes.forecast import router as forecast_router
-from backend.app.routes.health import router as health_router
-from backend.app.routes.impact import router as impact_router
-from backend.app.routes.load import router as load_router
-from backend.app.routes.schedule import router as schedule_router
-from backend.app.routes.sessions import router as sessions_router
-from backend.app.routes.vehicle import router as vehicle_router
+from backend.app.api.router import api_router
+from backend.app.core.config import parse_cors_origins
 
 app = FastAPI(
     title="VerdeWatt Backend API",
@@ -21,40 +10,16 @@ app = FastAPI(
     version="0.1.0",
 )
 
-def _parse_cors_origins() -> list[str]:
-    raw_origins = os.getenv("CORS_ORIGINS", "")
-    if raw_origins.strip():
-        return [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
-
-    # Local defaults keep current development behavior out of the box.
-    return [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://192.168.156.244:5173"
-    ]
-
-cors_origins = _parse_cors_origins()
+cors_origins = parse_cors_origins()
 print("CORS_ORIGINS =", cors_origins)
 
 # CORS setup for local + LAN frontend development.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_parse_cors_origins(),
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(health_router)
-app.include_router(load_router)
-app.include_router(sessions_router)
-app.include_router(allocate_router)
-app.include_router(alerts_router)
-app.include_router(billing_router)
-app.include_router(charger_commands_router)
-app.include_router(forecast_router)
-app.include_router(impact_router)
-app.include_router(schedule_router)
-app.include_router(vehicle_router)
+app.include_router(api_router)

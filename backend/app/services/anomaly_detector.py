@@ -9,22 +9,13 @@ from __future__ import annotations
 from collections import defaultdict
 from datetime import datetime, timezone
 import json
-from pathlib import Path
 from typing import Any, Dict, List
 
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-SESSIONS_JSON_PATH = PROJECT_ROOT / "data" / "ev_sessions_sample.json"
-
-# Safe AC charging threshold for this MVP.
-SAFE_MAX_CHARGING_KW = 22.0
-
-# Simple mock telemetry for charger connectivity tests.
-MOCK_CHARGER_HEALTH = [
-    {"charger_id": "CHG-A1", "offline": False, "failed_pings": 1},
-    {"charger_id": "CHG-B2", "offline": True, "failed_pings": 6},
-    {"charger_id": "CHG-C3", "offline": False, "failed_pings": 5},
-]
+from backend.app.core.constants import (
+    MOCK_CHARGER_HEALTH,
+    SAFE_MAX_CHARGING_KW,
+    SESSIONS_JSON_PATH,
+)
 
 
 def _now_iso() -> str:
