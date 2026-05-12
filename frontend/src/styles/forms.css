@@ -1,11 +1,11 @@
-.vehicle-input {
+.public-flow .vehicle-input {
   flex: 1;
   min-width: 220px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  padding: 14px 16px;
-  border-radius: 16px;
+  border: 1px solid #ccd5be;
+  background: #ffffff;
+  color: #1b2115;
+  padding: 13px 14px;
+  border-radius: 12px;
   font-size: 14px;
   outline: none;
   transition:
@@ -14,49 +14,119 @@
     background 0.2s ease;
 }
 
-.vehicle-input:focus {
-  border-color: rgba(56, 189, 248, 0.5);
-  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.08);
+.public-flow .vehicle-input:focus {
+  border-color: #9ac942;
+  box-shadow: 0 0 0 4px rgba(154, 201, 66, 0.18);
 }
 
-.vehicle-search-btn,
-.public-button,
-.portal-tab-btn,
-.theme-toggle-btn,
-.sidebar-mini-btn {
-  cursor: pointer;
-}
-
-.portal-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.portal-form-grid label,
-.staff-login-form label {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-soft);
-}
-
-.staff-login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.staff-login-actions {
+.public-flow .vehicle-search-bar {
+  margin-top: 14px;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-@media (max-width: 700px) {
-  .portal-form-grid {
+.public-flow .vehicle-search-btn,
+.public-flow .public-button {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.public-flow .vehicle-search-btn,
+.public-flow .public-button-primary {
+  border: 1px solid #8fbc2d;
+  background: #a8d935;
+  color: #18210f;
+}
+
+.public-flow .vehicle-search-btn:hover,
+.public-flow .public-button-primary:hover {
+  background: #9ecc31;
+}
+
+.public-flow .vehicle-search-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.public-flow .public-button-ghost {
+  border: 1px solid #ccd5be;
+  background: #ffffff;
+  color: #2f3924;
+}
+
+.public-flow .public-button-ghost:hover {
+  background: #f1f5e8;
+}
+
+.public-flow .portal-form-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.public-flow .portal-form-grid label,
+.public-flow .staff-login-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4a563d;
+}
+
+.public-flow .portal-form-actions {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.public-flow .staff-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.public-flow .staff-login-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.public-flow .vehicle-error {
+  margin-top: 10px;
+  color: #bf2d2d;
+  font-weight: 700;
+}
+
+.public-flow .portal-result-grid .vehicle-info-item {
+  background: #f7f9f2;
+  border: 1px solid #dbe4ce;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.public-flow .portal-result-grid .vehicle-info-item span {
+  display: block;
+  margin-bottom: 8px;
+  color: #5c6750;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.public-flow .portal-result-grid .vehicle-info-item strong {
+  color: #1e2418;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .public-flow .portal-form-grid {
     grid-template-columns: 1fr;
   }
 }

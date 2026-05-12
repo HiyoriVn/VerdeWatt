@@ -3,6 +3,12 @@ import { useState } from "react";
 const DEMO_EMAIL = "admin@verdewatt.vn";
 const DEMO_PASSWORD = "demo123";
 
+const TRUST_POINTS = [
+  "Forecast-aware charging allocation for peak windows",
+  "Rule-based safety checks with explainable alerts",
+  "Resident portal + operator dashboard in one workflow",
+];
+
 export default function StaffLoginPage({
   onBackToLanding,
   onLoginSuccess,
@@ -43,31 +49,40 @@ export default function StaffLoginPage({
   }
 
   return (
-    <div className="public-page">
+    <div className="public-page staff-login-page">
       <section className="staff-login-shell">
         <div className="staff-login-copy">
-          <p className="portal-eyebrow">
-            Internal access
-          </p>
-          <h1>Staff Login</h1>
+          <p className="public-chip">Operator portal</p>
+          <h1>Building operations login</h1>
           <p>
-            This prototype login uses local demo state for
-            MVP flows. No real authentication or credential
-            storage is used.
+            Access the VerdeWatt staff dashboard to monitor charging sessions,
+            forecasted demand, and operational alerts.
           </p>
 
-          <div className="staff-login-hint">
-            <strong>Demo account</strong>
-            <p>
-              admin@verdewatt.vn / demo123
-            </p>
-          </div>
+          <ul className="staff-benefits-list">
+            {TRUST_POINTS.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+
+          <button
+            type="button"
+            className="public-button public-button-ghost"
+            onClick={onBackToLanding}
+          >
+            Back to Landing
+          </button>
         </div>
 
         <form
-          className="card glass-card staff-login-form"
+          className="staff-login-form public-panel"
           onSubmit={handleSubmit}
         >
+          <h3>Sign in</h3>
+          <p className="muted-text">
+            Use your operator account to continue.
+          </p>
+
           <label>
             Staff email
             <input
@@ -114,14 +129,11 @@ export default function StaffLoginPage({
             >
               Enter Dashboard
             </button>
-            <button
-              type="button"
-              className="public-button public-button-ghost"
-              onClick={onBackToLanding}
-            >
-              Back to Landing
-            </button>
           </div>
+
+          <p className="demo-note">
+            Demo credentials: {DEMO_EMAIL} / {DEMO_PASSWORD}
+          </p>
         </form>
       </section>
     </div>

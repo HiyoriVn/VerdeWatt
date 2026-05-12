@@ -66,7 +66,7 @@ export default function App() {
 
   if (view === "landing") {
     return (
-      <div className="main-wrapper">
+      <div className="main-wrapper public-flow">
         <main className="main-content">
           <LandingPage
             onOpenChargingPortal={() =>
@@ -83,7 +83,7 @@ export default function App() {
 
   if (view === "chargingPortal") {
     return (
-      <div className="main-wrapper">
+      <div className="main-wrapper public-flow">
         <main className="main-content">
           <ChargingPortalPage
             onBackToLanding={() => setView("landing")}
@@ -101,7 +101,7 @@ export default function App() {
     (view === "dashboard" && !isStaffLoggedIn)
   ) {
     return (
-      <div className="main-wrapper">
+      <div className="main-wrapper public-flow">
         <main className="main-content">
           <StaffLoginPage
             onBackToLanding={() => setView("landing")}

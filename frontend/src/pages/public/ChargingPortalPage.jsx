@@ -14,6 +14,26 @@ const INITIAL_FORM = {
   preference: "balanced",
 };
 
+function formatVnd(value) {
+  const amount = Number(value);
+
+  if (!Number.isFinite(amount)) {
+    return "N/A";
+  }
+
+  return `${amount.toLocaleString("vi-VN")} VND`;
+}
+
+function formatHour(value) {
+  const hour = Number(value);
+
+  if (!Number.isFinite(hour)) {
+    return "N/A";
+  }
+
+  return `${hour}:00`;
+}
+
 export default function ChargingPortalPage({
   onBackToLanding,
   onOpenStaffLogin,
@@ -82,16 +102,14 @@ export default function ChargingPortalPage({
   }
 
   return (
-    <div className="public-page">
+    <div className="public-page portal-page">
       <section className="portal-hero">
         <div>
-          <p className="portal-eyebrow">
-            Resident and guest access
-          </p>
-          <h1>Charging Portal</h1>
+          <p className="public-chip">Resident portal</p>
+          <h1>Check EV status or submit a charging request.</h1>
           <p>
-            Check your current charging recommendation or
-            submit a new request for safe scheduling.
+            Form-first flow for residents and guest drivers, with clear
+            recommendations from VerdeWatt scheduling logic.
           </p>
         </div>
 
@@ -104,7 +122,7 @@ export default function ChargingPortalPage({
         </button>
       </section>
 
-      <section className="portal-tabs">
+      <section className="portal-tabs" aria-label="Portal mode">
         <button
           type="button"
           className={`portal-tab-btn ${
@@ -132,98 +150,12 @@ export default function ChargingPortalPage({
 
       {portalTab === "guest" ? (
         <div className="portal-grid">
-          <section className="card glass-card">
-            <div className="section-title-wrap">
-              <h3>Check My Vehicle</h3>
-              <p>
-                Enter your vehicle code to get status,
-                completion estimate, and cost guidance.
-              </p>
-            </div>
-
-            <form
-              className="vehicle-search-bar"
-              onSubmit={handleVehicleSearch}
-            >
-              <input
-                className="vehicle-input"
-                value={vehicleId}
-                onChange={(event) =>
-                  setVehicleId(event.target.value)
-                }
-                placeholder="EV_001"
-                required
-              />
-
-              <button
-                type="submit"
-                className="vehicle-search-btn"
-                disabled={vehicleLoading}
-              >
-                {vehicleLoading
-                  ? "Checking..."
-                  : "Check Status"}
-              </button>
-            </form>
-
-            {vehicleError ? (
-              <p className="vehicle-error">
-                {vehicleError}
-              </p>
-            ) : null}
-
-            {vehicleResult ? (
-              <div className="vehicle-result-grid">
-                <div className="vehicle-info-item">
-                  <span>Status</span>
-                  <strong>
-                    {vehicleResult.status ?? "N/A"}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Recommended Action</span>
-                  <strong>
-                    {vehicleResult.recommended_action ??
-                      "N/A"}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Estimated Completion Hour</span>
-                  <strong>
-                    {vehicleResult.estimated_completion_hour ??
-                      "N/A"}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Estimated Cost (VND)</span>
-                  <strong>
-                    {vehicleResult.estimated_cost_vnd ??
-                      "N/A"}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Estimated Saving (VND)</span>
-                  <strong>
-                    {vehicleResult.estimated_saving_vnd ??
-                      "N/A"}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>User Message</span>
-                  <strong>
-                    {vehicleResult.user_message ?? "N/A"}
-                  </strong>
-                </div>
-              </div>
-            ) : null}
-          </section>
-
-          <section className="card glass-card">
+          <section className="public-panel">
             <div className="section-title-wrap">
               <h3>Register Charging Request</h3>
               <p>
-                Submit charging details and receive a safe
-                recommendation from VerdeWatt.
+                Submit your charging needs and receive a safe schedule
+                recommendation.
               </p>
             </div>
 
@@ -243,7 +175,7 @@ export default function ChargingPortalPage({
               </label>
 
               <label>
-                Current SOC
+                Current SOC (%)
                 <input
                   className="vehicle-input"
                   type="number"
@@ -257,7 +189,7 @@ export default function ChargingPortalPage({
               </label>
 
               <label>
-                Target SOC
+                Target SOC (%)
                 <input
                   className="vehicle-input"
                   type="number"
@@ -305,15 +237,9 @@ export default function ChargingPortalPage({
                   value={form.preference}
                   onChange={handleInputChange}
                 >
-                  <option value="fastest">
-                    fastest
-                  </option>
-                  <option value="cheapest">
-                    cheapest
-                  </option>
-                  <option value="balanced">
-                    balanced
-                  </option>
+                  <option value="fastest">fastest</option>
+                  <option value="cheapest">cheapest</option>
+                  <option value="balanced">balanced</option>
                 </select>
               </label>
 
@@ -331,70 +257,136 @@ export default function ChargingPortalPage({
             </form>
 
             {requestError ? (
-              <p className="vehicle-error">
-                {requestError}
-              </p>
+              <p className="vehicle-error">{requestError}</p>
             ) : null}
 
             {requestResult ? (
-              <div className="vehicle-result-grid">
+              <div className="portal-result-grid">
                 <div className="vehicle-info-item">
                   <span>Status</span>
-                  <strong>
-                    {requestResult.status ?? "N/A"}
-                  </strong>
+                  <strong>{requestResult.status ?? "N/A"}</strong>
                 </div>
                 <div className="vehicle-info-item">
                   <span>Recommended Action</span>
                   <strong>
-                    {requestResult.recommended_action ??
-                      "N/A"}
+                    {requestResult.recommended_action ?? "N/A"}
                   </strong>
                 </div>
                 <div className="vehicle-info-item">
-                  <span>Scheduled Start Hour</span>
+                  <span>Scheduled Start</span>
                   <strong>
-                    {requestResult.scheduled_start_hour ??
-                      "N/A"}
+                    {formatHour(requestResult.scheduled_start_hour)}
                   </strong>
                 </div>
                 <div className="vehicle-info-item">
-                  <span>Estimated Completion Hour</span>
+                  <span>Estimated Completion</span>
                   <strong>
-                    {requestResult.estimated_completion_hour ??
-                      "N/A"}
+                    {formatHour(requestResult.estimated_completion_hour)}
                   </strong>
                 </div>
                 <div className="vehicle-info-item">
-                  <span>Estimated Cost (VND)</span>
+                  <span>Estimated Cost</span>
                   <strong>
-                    {requestResult.estimated_cost_vnd ??
-                      "N/A"}
+                    {formatVnd(requestResult.estimated_cost_vnd)}
                   </strong>
                 </div>
                 <div className="vehicle-info-item">
-                  <span>Estimated Saving (VND)</span>
+                  <span>Estimated Saving</span>
                   <strong>
-                    {requestResult.estimated_saving_vnd ??
-                      "N/A"}
+                    {formatVnd(requestResult.estimated_saving_vnd)}
                   </strong>
                 </div>
-                <div className="vehicle-info-item">
+                <div className="vehicle-info-item portal-result-message">
                   <span>User Message</span>
+                  <strong>{requestResult.user_message ?? "N/A"}</strong>
+                </div>
+              </div>
+            ) : null}
+          </section>
+
+          <section className="public-panel">
+            <div className="section-title-wrap">
+              <h3>Check My Vehicle</h3>
+              <p>
+                Enter your vehicle code to review current status and expected
+                charging outcome.
+              </p>
+            </div>
+
+            <form
+              className="vehicle-search-bar"
+              onSubmit={handleVehicleSearch}
+            >
+              <input
+                className="vehicle-input"
+                value={vehicleId}
+                onChange={(event) =>
+                  setVehicleId(event.target.value)
+                }
+                placeholder="EV_001"
+                required
+              />
+
+              <button
+                type="submit"
+                className="vehicle-search-btn"
+                disabled={vehicleLoading}
+              >
+                {vehicleLoading
+                  ? "Checking..."
+                  : "Check Status"}
+              </button>
+            </form>
+
+            {vehicleError ? (
+              <p className="vehicle-error">{vehicleError}</p>
+            ) : null}
+
+            {vehicleResult ? (
+              <div className="portal-result-grid">
+                <div className="vehicle-info-item">
+                  <span>Status</span>
+                  <strong>{vehicleResult.status ?? "N/A"}</strong>
+                </div>
+                <div className="vehicle-info-item">
+                  <span>Recommended Action</span>
                   <strong>
-                    {requestResult.user_message ?? "N/A"}
+                    {vehicleResult.recommended_action ?? "N/A"}
                   </strong>
+                </div>
+                <div className="vehicle-info-item">
+                  <span>Estimated Completion</span>
+                  <strong>
+                    {formatHour(vehicleResult.estimated_completion_hour)}
+                  </strong>
+                </div>
+                <div className="vehicle-info-item">
+                  <span>Estimated Cost</span>
+                  <strong>
+                    {formatVnd(vehicleResult.estimated_cost_vnd)}
+                  </strong>
+                </div>
+                <div className="vehicle-info-item">
+                  <span>Estimated Saving</span>
+                  <strong>
+                    {formatVnd(vehicleResult.estimated_saving_vnd)}
+                  </strong>
+                </div>
+                <div className="vehicle-info-item portal-result-message">
+                  <span>User Message</span>
+                  <strong>{vehicleResult.user_message ?? "N/A"}</strong>
                 </div>
               </div>
             ) : null}
           </section>
         </div>
       ) : (
-        <section className="card glass-card staff-access-card">
-          <h3>Staff Access</h3>
+        <section className="public-panel staff-access-card">
+          <p className="public-chip">Operator access</p>
+          <h3>Staff access for building operations teams</h3>
           <p className="muted-text">
-            Building managers and operations staff can
-            continue to the internal dashboard login.
+            Building managers can continue to the internal dashboard login for
+            demand monitoring, allocation, and security alerts.
           </p>
           <button
             type="button"
