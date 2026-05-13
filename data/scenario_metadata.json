@@ -1,0 +1,50 @@
+{
+  "scenario_id": "verdewatt_apartment_mixed_ev_mvp_v1",
+  "scenario_name": "Representative Apartment Charging Scenario (MVP)",
+  "scenario_type": "synthetic_demo_data",
+  "description": "Synthetic mixed-vehicle charging scenario for VerdeWatt MVP demonstrations in an apartment or residential charging area.",
+  "scope_note": "This scenario is for MVP demo storytelling and is not an official benchmark for Vietnamese or ASEAN building averages.",
+  "policy_context_note": "Cong dien 27/CD-TTg is treated as policy context only until technical implications are verified with authoritative sources.",
+  "session_summary": {
+    "total_sessions": 22,
+    "vehicle_mix": {
+      "electric_motorbike": 7,
+      "small_ev_car": 6,
+      "standard_ev_car": 9
+    }
+  },
+  "charger_summary": {
+    "total_chargers": 12,
+    "types": {
+      "ac_7kw": 4,
+      "ac_11kw": 3,
+      "motorbike_socket": 4,
+      "dc_fast_unknown": 1
+    },
+    "status": {
+      "available": 10,
+      "maintenance": 1,
+      "unavailable": 1
+    }
+  },
+  "assumed_peak_window": {
+    "start_hour": 18,
+    "end_hour": 22,
+    "reason": "Represents evening return-home charging overlap in residential buildings."
+  },
+  "safe_capacity_definition": {
+    "field_name": "safe_capacity_kw",
+    "default_sample_value_kw": 120,
+    "note": "Used as a configurable safety threshold in simulation and dashboard explanation."
+  },
+  "security_demo_markers": {
+    "suspicious_session_id": "EV_999",
+    "suspicious_charger_id": "CH_X_99",
+    "purpose": "Intentional anomaly for rule-based security alert demonstration only."
+  },
+  "source_status_policy": {
+    "verified": "Value has source evidence in repository or cited references.",
+    "needs_verification": "Value should not be presented as factual without an added source.",
+    "demo_assumption": "Value exists to make MVP behavior explainable."
+  }
+}
