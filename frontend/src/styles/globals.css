@@ -1,8 +1,9 @@
-/* globals.css */
+/* frontend\src\styles\globals.css */
 
 @import "./theme.css";
 @import "./layout.css";
 @import "./dashboard.css";
 @import "./charging.css";
+@import "./analytics.css";
 @import "./components.css";
 @import "./utilities.css";
