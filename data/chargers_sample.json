@@ -1,0 +1,98 @@
+[
+  {
+    "charger_id": "CH_A7_01",
+    "charger_type": "ac_7kw",
+    "max_power_kw": 7,
+    "status": "available",
+    "location": "Basement B1 - Slot A01",
+    "note": "Shared charger for small EV cars."
+  },
+  {
+    "charger_id": "CH_A7_02",
+    "charger_type": "ac_7kw",
+    "max_power_kw": 7,
+    "status": "available",
+    "location": "Basement B1 - Slot A02",
+    "note": "Shared charger for small and standard EV cars."
+  },
+  {
+    "charger_id": "CH_A7_03",
+    "charger_type": "ac_7kw",
+    "max_power_kw": 7,
+    "status": "available",
+    "location": "Basement B1 - Slot A03",
+    "note": "Night charging slot for residents."
+  },
+  {
+    "charger_id": "CH_A7_04",
+    "charger_type": "ac_7kw",
+    "max_power_kw": 7,
+    "status": "maintenance",
+    "location": "Basement B1 - Slot A04",
+    "note": "Temporarily reduced use during maintenance checks."
+  },
+  {
+    "charger_id": "CH_A11_01",
+    "charger_type": "ac_11kw",
+    "max_power_kw": 11,
+    "status": "available",
+    "location": "Basement B2 - Slot B01",
+    "note": "Higher-power AC charger for larger EV batteries."
+  },
+  {
+    "charger_id": "CH_A11_02",
+    "charger_type": "ac_11kw",
+    "max_power_kw": 11,
+    "status": "available",
+    "location": "Basement B2 - Slot B02",
+    "note": "Reserved for urgent overnight departures."
+  },
+  {
+    "charger_id": "CH_A11_03",
+    "charger_type": "ac_11kw",
+    "max_power_kw": 11,
+    "status": "available",
+    "location": "Basement B2 - Slot B03",
+    "note": "Shared with standard EV sessions."
+  },
+  {
+    "charger_id": "CH_MB_01",
+    "charger_type": "motorbike_socket",
+    "max_power_kw": 1.5,
+    "status": "available",
+    "location": "Ground Floor - Motorbike Zone M01",
+    "note": "Low-power socket for electric motorbikes."
+  },
+  {
+    "charger_id": "CH_MB_02",
+    "charger_type": "motorbike_socket",
+    "max_power_kw": 1.5,
+    "status": "available",
+    "location": "Ground Floor - Motorbike Zone M02",
+    "note": "Low-power socket for electric motorbikes."
+  },
+  {
+    "charger_id": "CH_MB_03",
+    "charger_type": "motorbike_socket",
+    "max_power_kw": 1.5,
+    "status": "available",
+    "location": "Ground Floor - Motorbike Zone M03",
+    "note": "Low-power socket for electric motorbikes."
+  },
+  {
+    "charger_id": "CH_MB_04",
+    "charger_type": "motorbike_socket",
+    "max_power_kw": 1.5,
+    "status": "available",
+    "location": "Ground Floor - Motorbike Zone M04",
+    "note": "Low-power socket for electric motorbikes."
+  },
+  {
+    "charger_id": "CH_X_99",
+    "charger_type": "dc_fast_unknown",
+    "max_power_kw": 120,
+    "status": "unavailable",
+    "location": "Basement Service Corner - Isolated Bay",
+    "note": "Demo-only suspicious and unavailable charger profile for security anomaly demonstrations."
+  }
+]
