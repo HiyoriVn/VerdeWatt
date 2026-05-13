@@ -1,5 +1,7 @@
+/* frontend\src\pages\staff\Dashboard.jsx */
 import { useEffect, useMemo, useState } from "react";
 import {
+  Bell,
   CalendarDays,
   Clock3,
   Moon,
@@ -26,12 +28,13 @@ import ScheduleRecommendations from "../../components/dashboard/ScheduleRecommen
 import SecurityAlertFeed from "../../components/dashboard/SecurityAlertFeed";
 import EVSessionCard from "../../components/charging/EVSessionCard";
 import VehicleLookup from "../../components/charging/VehicleLookup";
+import HeroBanner from "../../components/dashboard/HeroBanner";
 
 const TAB_DETAILS = {
   dashboard: {
-    title: "VerdeWatt",
+    title: "Energy Control Center",
     subtitle:
-      "AI-powered cybersecure smart EV charging for high-rise buildings",
+      "Real-time EV charging monitoring and safe optimization.",
   },
   "charging-sessions": {
     title: "Charging Sessions",
@@ -237,6 +240,25 @@ export default function Dashboard({
     TAB_DETAILS[activeTab]?.subtitle ||
     TAB_DETAILS.dashboard.subtitle;
 
+  const isDashboardOverview =
+    activeTab === "dashboard";
+
+  const currentTimeLabel = now.toLocaleTimeString(
+    "en-GB",
+    {
+      hour12: false,
+    }
+  );
+
+  const currentDateLabel = now.toLocaleDateString(
+    undefined,
+    {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    }
+  );
+
   const sessionPreview = sessions.slice(0, 6);
 
   const safeCapacityValue = useMemo(() => {
@@ -260,6 +282,19 @@ export default function Dashboard({
   function renderDashboardTab() {
     return (
       <>
+        <div className="dashboard-top-grid">
+          <HeroBanner
+            allocation={allocation}
+            sessions={sessions}
+            alerts={alerts}
+            loadData={loadData}
+          />
+
+          <AllocationSummary
+            allocation={allocation}
+          />
+        </div>
+
         <KPICards billing={billing} />
 
         <div className="main-grid">
@@ -270,8 +305,6 @@ export default function Dashboard({
                 allocation?.total_load_after_optimization
               }
             />
-
-            <AllocationSummary allocation={allocation} />
 
             <section className="card glass-card">
               <div className="section-title-wrap">
@@ -528,7 +561,13 @@ export default function Dashboard({
   }
 
   return (
-    <div className="dashboard-page">
+    <div
+      className={`dashboard-page ${
+        isDashboardOverview
+          ? "dashboard-reference"
+          : ""
+      }`}
+    >
       <header className="dashboard-header">
         <div>
           <h1>{pageTitle}</h1>
@@ -536,32 +575,33 @@ export default function Dashboard({
         </div>
 
         <div className="dashboard-header-right">
-          <div className="live-meta">
-            <div>
-              <Clock3 size={14} />
-              <strong>
-                {now.toLocaleTimeString("en-GB", {
-                  hour12: false,
-                })}
-              </strong>
-            </div>
-
-            <div>
-              <CalendarDays size={14} />
-              <span>
-                {now.toLocaleDateString(undefined, {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
+          <div className="live-meta live-meta-inline">
+            <Clock3 size={14} />
+            <strong>{currentTimeLabel}</strong>
+            <span className="live-meta-separator">
+              /
+            </span>
+            <CalendarDays size={14} />
+            <span>{currentDateLabel}</span>
           </div>
+
+          {isDashboardOverview ? (
+            <button
+              type="button"
+              className="dashboard-action-btn"
+              aria-label="View notifications"
+            >
+              <Bell size={16} />
+            </button>
+          ) : null}
 
           <button
             type="button"
-            className="theme-toggle-btn"
+            className={`theme-toggle-btn ${
+              isDashboardOverview
+                ? "theme-toggle-btn-compact"
+                : ""
+            }`}
             onClick={onToggleTheme}
             aria-label="Toggle theme"
           >
@@ -570,11 +610,13 @@ export default function Dashboard({
             ) : (
               <Moon size={16} />
             )}
-            <span>
-              {theme === "dark"
-                ? "Light"
-                : "Dark"}
-            </span>
+            {!isDashboardOverview ? (
+              <span>
+                {theme === "dark"
+                  ? "Light"
+                  : "Dark"}
+              </span>
+            ) : null}
           </button>
         </div>
       </header>
@@ -594,3 +636,5 @@ export default function Dashboard({
     </div>
   );
 }
+
+

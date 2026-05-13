@@ -13,8 +13,26 @@ function EVSessionCard({ session }) {
     priorityClassMap[priorityKey] ||
     "priority-normal";
 
+  const currentSoc = Number(
+    session?.current_soc ?? 0
+  );
+  const targetSoc = Number(
+    session?.target_soc ?? 100
+  );
+  const socProgress = Math.max(
+    0,
+    Math.min(
+      targetSoc > 0
+        ? (currentSoc / targetSoc) * 100
+        : 0,
+      100
+    )
+  );
+
   return (
-    <article className="card glass-card ev-card">
+    <article
+      className={`card glass-card ev-card ev-card-${priorityKey}`}
+    >
       <div className="ev-card-top">
         <h3>{session.id}</h3>
 
@@ -23,6 +41,15 @@ function EVSessionCard({ session }) {
         >
           {priorityKey}
         </span>
+      </div>
+
+      <div className="ev-soc-track">
+        <div
+          className="ev-soc-fill"
+          style={{
+            width: `${socProgress}%`,
+          }}
+        />
       </div>
 
       <div className="ev-card-body">

@@ -19,7 +19,7 @@ function getInitialTheme() {
   const initialTheme =
     savedTheme === "dark" || savedTheme === "light"
       ? savedTheme
-      : "dark";
+      : "light";
 
   window.document.documentElement.setAttribute(
     "data-theme",

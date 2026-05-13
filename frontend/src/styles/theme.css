@@ -123,3 +123,161 @@
   --tooltip-bg:
     rgba(255,255,255,0.95);
 }
+
+/* =========================
+   APP BACKGROUND
+========================= */
+
+body {
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(56, 189, 248, 0.10),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at left center,
+      rgba(16, 185, 129, 0.05),
+      transparent 24%
+    ),
+    linear-gradient(
+      180deg,
+      #f5f8fc 0%,
+      #eef4fb 100%
+    );
+
+  min-height: 100vh;
+}
+
+/* =========================
+   LIGHT MODE
+========================= */
+
+:root {
+  --page-bg: #f4f8fd;
+  --card-bg: rgba(255,255,255,.72);
+
+  --text-primary: #0f172a;
+  --text-soft: #64748b;
+
+  --border:
+    rgba(15,23,42,.08);
+
+  --card-shadow:
+    0 8px 30px
+    rgba(15,23,42,.05);
+
+  --glass-blur: blur(18px);
+}
+
+/* card nền sáng đẹp hơn */
+
+.card,
+.glass-card {
+  background:
+    rgba(255,255,255,.72);
+
+  backdrop-filter:
+    blur(18px);
+
+  border:
+    1px solid rgba(255,255,255,.55);
+
+  box-shadow:
+    0 10px 35px
+    rgba(15,23,42,.06);
+}
+
+/* sidebar sáng */
+
+.sidebar {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.74),
+      rgba(247,250,253,.82)
+    );
+
+  backdrop-filter:
+    blur(24px);
+
+  border-right:
+    1px solid rgba(15,23,42,.06);
+}
+
+/* =========================
+   DARK MODE
+========================= */
+
+.dark body,
+[data-theme="dark"] body {
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(0,180,255,.16),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at left center,
+      rgba(0,255,200,.06),
+      transparent 20%
+    ),
+    linear-gradient(
+      180deg,
+      #020817 0%,
+      #06142d 100%
+    );
+}
+
+.dark,
+[data-theme="dark"] {
+  --page-bg: #061224;
+
+  --card-bg:
+    rgba(7,18,36,.72);
+
+  --text-primary: #f8fafc;
+  --text-soft:
+    rgba(255,255,255,.65);
+
+  --border:
+    rgba(255,255,255,.06);
+}
+
+/* card dark */
+
+.dark .card,
+.dark .glass-card,
+[data-theme="dark"] .card,
+[data-theme="dark"] .glass-card {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(10,23,48,.78),
+      rgba(4,15,33,.85)
+    );
+
+  border:
+    1px solid
+    rgba(255,255,255,.05);
+
+  box-shadow:
+    0 12px 40px
+    rgba(0,0,0,.28);
+}
+
+/* sidebar dark */
+
+.dark .sidebar,
+[data-theme="dark"] .sidebar {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(4,16,34,.96),
+      rgba(3,12,28,.98)
+    );
+
+  border-right:
+    1px solid
+    rgba(255,255,255,.04);
+}

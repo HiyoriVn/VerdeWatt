@@ -1,7 +1,12 @@
+import { useState } from "react";
 import {
   BarChart3,
   BatteryCharging,
+  Globe,
   LayoutDashboard,
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
   Receipt,
   Settings,
   ShieldAlert,
@@ -55,10 +60,29 @@ export default function AppShell({
   onOpenPublicSite,
   onLogout,
 }) {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] =
+    useState(false);
+
+  const SidebarToggleIcon = isSidebarCollapsed
+    ? PanelLeftOpen
+    : PanelLeftClose;
+
   return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <div>
+    <div
+      className={`app-shell ${
+        isSidebarCollapsed
+          ? "app-shell-collapsed"
+          : ""
+      }`}
+    >
+      <aside
+        className={`sidebar ${
+          isSidebarCollapsed
+            ? "sidebar-collapsed"
+            : ""
+        }`}
+      >
+        <div className="sidebar-main">
           <div className="brand-area">
             <div className="brand-logo">
               <Zap size={22} />
@@ -70,6 +94,26 @@ export default function AppShell({
             </div>
           </div>
 
+          <div className="sidebar-toggle-row">
+            <button
+              type="button"
+              className="sidebar-collapse-btn"
+              onClick={() =>
+                setIsSidebarCollapsed(
+                  (currentValue) =>
+                    !currentValue
+                )
+              }
+              aria-label={
+                isSidebarCollapsed
+                  ? "Expand sidebar"
+                  : "Collapse sidebar"
+              }
+            >
+              <SidebarToggleIcon size={16} />
+            </button>
+          </div>
+
           <nav className="sidebar-nav">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
@@ -79,6 +123,7 @@ export default function AppShell({
                   key={item.id}
                   type="button"
                   onClick={() => onTabChange(item.id)}
+                  title={item.label}
                   className={`sidebar-nav-item ${
                     activeTab === item.id
                       ? "sidebar-nav-item-active"
@@ -86,45 +131,53 @@ export default function AppShell({
                   }`}
                 >
                   <Icon size={18} />
-                  <span>{item.label}</span>
+                  <span className="sidebar-nav-label">
+                    {item.label}
+                  </span>
                 </button>
               );
             })}
           </nav>
         </div>
 
-        <div className="sidebar-user">
-          <div className="sidebar-user-avatar">
-            <UserRound size={20} />
+        <div className="sidebar-bottom">
+          <div className="sidebar-user">
+            <div className="sidebar-user-avatar">
+              <UserRound size={20} />
+            </div>
+
+            <div className="sidebar-user-meta">
+              <strong>
+                {staffProfile?.email || "Admin"}
+              </strong>
+              <p>
+                {staffProfile?.buildingCode
+                  ? `Building ${staffProfile.buildingCode}`
+                  : "Building Manager"}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <strong>
-              {staffProfile?.email || "Admin"}
-            </strong>
-            <p>
-              {staffProfile?.buildingCode
-                ? `Building ${staffProfile.buildingCode}`
-                : "Building Manager"}
-            </p>
+          <div className="sidebar-public-actions">
+            <button
+              type="button"
+              className="sidebar-mini-btn"
+              onClick={onOpenPublicSite}
+              title="Public Site"
+            >
+              <Globe size={14} />
+              <span>Public Site</span>
+            </button>
+            <button
+              type="button"
+              className="sidebar-mini-btn"
+              onClick={onLogout}
+              title="Sign Out"
+            >
+              <LogOut size={14} />
+              <span>Sign Out</span>
+            </button>
           </div>
-        </div>
-
-        <div className="sidebar-public-actions">
-          <button
-            type="button"
-            className="sidebar-mini-btn"
-            onClick={onOpenPublicSite}
-          >
-            Public Site
-          </button>
-          <button
-            type="button"
-            className="sidebar-mini-btn"
-            onClick={onLogout}
-          >
-            Sign Out
-          </button>
         </div>
       </aside>
 
