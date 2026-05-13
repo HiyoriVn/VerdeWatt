@@ -1,4 +1,7 @@
-import React from "react";
+with open('frontend/src/components/dashboard/ImpactCards.jsx', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+new_content = """import React from "react";
 import { Cloud, Trees, Droplet, Zap } from "lucide-react";
 
 function toNumber(value) {
@@ -93,3 +96,7 @@ function ImpactCards({ impact }) {
 }
 
 export default ImpactCards;
+"""
+
+with open('frontend/src/components/dashboard/ImpactCards.jsx', 'w', encoding='utf-8') as f:
+    f.write(new_content)

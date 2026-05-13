@@ -46,10 +46,12 @@ function ForecastChart({
   if (!chartData.length && !loadData.length) {
     return (
       <>
-        <h3>Forecast Trend</h3>
+      <div className="section-title-wrap">
+        <h3 style={{ fontSize: '22px' }}>Forecast Trend</h3>
         <p className="muted-text">
           Forecast data is not available yet.
         </p>
+      </div>
       </>
     );
   }
@@ -69,10 +71,12 @@ function ForecastChart({
 
   return (
     <>
-      <h3>Forecast Trend</h3>
-      <p className="muted-text">
-        Model: {modelName}
-      </p>
+      <div className="section-title-wrap">
+        <h3 style={{ fontSize: '22px' }}>Forecast Trend</h3>
+        <p className="muted-text">
+          Model: {modelName}
+        </p>
+      </div>
 
       {!chartData.length && (
         <p className="muted-text">

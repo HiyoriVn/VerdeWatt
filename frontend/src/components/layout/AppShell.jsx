@@ -94,26 +94,6 @@ export default function AppShell({
             </div>
           </div>
 
-          <div className="sidebar-toggle-row">
-            <button
-              type="button"
-              className="sidebar-collapse-btn"
-              onClick={() =>
-                setIsSidebarCollapsed(
-                  (currentValue) =>
-                    !currentValue
-                )
-              }
-              aria-label={
-                isSidebarCollapsed
-                  ? "Expand sidebar"
-                  : "Collapse sidebar"
-              }
-            >
-              <SidebarToggleIcon size={16} />
-            </button>
-          </div>
-
           <nav className="sidebar-nav">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
@@ -142,40 +122,62 @@ export default function AppShell({
 
         <div className="sidebar-bottom">
           <div className="sidebar-user">
-            <div className="sidebar-user-avatar">
-              <UserRound size={20} />
+            <div className="sidebar-user-info">
+              <div className="sidebar-user-avatar">
+                <UserRound size={20} />
+              </div>
+
+              <div className="sidebar-user-meta">
+                <strong>
+                  {staffProfile?.email || "Admin"}
+                </strong>
+                <p>
+                  {staffProfile?.buildingCode
+                    ? `Building ${staffProfile.buildingCode}`
+                    : "Building Manager"}
+                </p>
+              </div>
             </div>
 
-            <div className="sidebar-user-meta">
-              <strong>
-                {staffProfile?.email || "Admin"}
-              </strong>
-              <p>
-                {staffProfile?.buildingCode
-                  ? `Building ${staffProfile.buildingCode}`
-                  : "Building Manager"}
-              </p>
+            <div className="sidebar-public-actions">
+              <button
+                type="button"
+                className="sidebar-mini-btn"
+                onClick={onOpenPublicSite}
+                title="Public Site"
+              >
+                <Globe size={14} />
+                <span>Public Site</span>
+              </button>
+              <button
+                type="button"
+                className="sidebar-mini-btn"
+                onClick={onLogout}
+                title="Sign Out"
+              >
+                <LogOut size={14} />
+                <span>Sign Out</span>
+              </button>
             </div>
           </div>
 
-          <div className="sidebar-public-actions">
+          <div className="sidebar-toggle-row">
             <button
               type="button"
-              className="sidebar-mini-btn"
-              onClick={onOpenPublicSite}
-              title="Public Site"
+              className="sidebar-collapse-btn"
+              onClick={() =>
+                setIsSidebarCollapsed(
+                  (currentValue) =>
+                    !currentValue
+                )
+              }
+              aria-label={
+                isSidebarCollapsed
+                  ? "Expand sidebar"
+                  : "Collapse sidebar"
+              }
             >
-              <Globe size={14} />
-              <span>Public Site</span>
-            </button>
-            <button
-              type="button"
-              className="sidebar-mini-btn"
-              onClick={onLogout}
-              title="Sign Out"
-            >
-              <LogOut size={14} />
-              <span>Sign Out</span>
+              <SidebarToggleIcon size={16} />
             </button>
           </div>
         </div>
