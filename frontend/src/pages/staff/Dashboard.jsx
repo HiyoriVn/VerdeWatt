@@ -33,7 +33,7 @@ import LoadCurveChart from "../../components/dashboard/LoadCurveChart";
 import ScheduleRecommendations from "../../components/dashboard/ScheduleRecommendations";
 import SecurityAlertFeed from "../../components/dashboard/SecurityAlertFeed";
 import EVSessionCard from "../../components/charging/EVSessionCard";
-import VehicleLookup from "../../components/charging/VehicleLookup";
+import VehicleDetailPanel from "../../components/charging/VehicleDetailPanel";
 import HeroBanner from "../../components/dashboard/HeroBanner";
 import ChargingHeroBanner from "../../components/dashboard/ChargingHeroBanner";
 
@@ -486,7 +486,7 @@ export default function Dashboard({
                 </div>
               </div>
 
-              <VehicleLookup selectedEvId={selectedEvId} sessions={sessions} />
+              <VehicleDetailPanel selectedEvId={selectedEvId} sessions={sessions} />
             </section>
           </div>
         </div>

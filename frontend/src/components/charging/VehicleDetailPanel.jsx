@@ -1,59 +1,7 @@
-# Patch Dashboard.jsx search buttons
-with open('frontend/src/pages/staff/Dashboard.jsx', 'r', encoding='utf-8') as f:
-    content = f.read()
-
-old_search = """                <div className="segmented-control">
-                  {["All", "Urgent", "Normal", "Flexible"].map((filter) => (
-                    <button
-                      key={filter}
-                      className={`filter-pill ${chargingFilter === filter ? 'active' : ''}`}
-                      onClick={() => setChargingFilter(filter)}
-                      style={{ 
-                        padding: '8px 20px', 
-                        fontSize: '13px', 
-                        fontWeight: '600', 
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                      }}
-                    >
-                      {filter}
-                    </button>
-                  ))}
-                </div>"""
-
-new_search = """                <div className="filter-pills" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  {["All", "Urgent", "Normal", "Flexible"].map((filter) => (
-                    <button
-                      key={filter}
-                      className={`filter-pill`}
-                      onClick={() => setChargingFilter(filter)}
-                      style={{ 
-                        padding: '6px 16px', 
-                        borderRadius: '99px', 
-                        border: chargingFilter === filter ? '1px solid var(--text)' : '1px solid var(--border)', 
-                        background: chargingFilter === filter ? 'var(--text)' : 'transparent', 
-                        color: chargingFilter === filter ? 'var(--card-bg)' : 'var(--text-soft)',
-                        fontSize: '13px', 
-                        fontWeight: '600', 
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                      }}
-                    >
-                      {filter}
-                    </button>
-                  ))}
-                </div>"""
-
-content = content.replace(old_search, new_search)
-
-with open('frontend/src/pages/staff/Dashboard.jsx', 'w', encoding='utf-8') as f:
-    f.write(content)
-
-# Patch VehicleLookup.jsx layout
-new_vehicle_lookup = """import React from "react";
+import React from "react";
 import { Clock, Battery, Zap, BatteryCharging } from "lucide-react";
 
-function VehicleLookup({ selectedEvId, sessions }) {
+function VehicleDetailPanel({ selectedEvId, sessions }) {
   if (!selectedEvId) {
     return (
       <div className="vehicle-lookup empty-state">
@@ -129,8 +77,4 @@ function VehicleLookup({ selectedEvId, sessions }) {
   );
 }
 
-export default VehicleLookup;
-"""
-
-with open('frontend/src/components/charging/VehicleLookup.jsx', 'w', encoding='utf-8') as f:
-    f.write(new_vehicle_lookup)
+export default VehicleDetailPanel;
