@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const DEMO_EMAIL = "admin@verdewatt.vn";
 const DEMO_PASSWORD = "demo123";
@@ -9,10 +10,8 @@ const TRUST_POINTS = [
   "Resident portal + operator dashboard in one workflow",
 ];
 
-export default function StaffLoginPage({
-  onBackToLanding,
-  onLoginSuccess,
-}) {
+export default function StaffLoginPage({ onLoginSuccess }) {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     email: DEMO_EMAIL,
     password: DEMO_PASSWORD,
@@ -45,7 +44,9 @@ export default function StaffLoginPage({
     onLoginSuccess({
       email: form.email.trim(),
       buildingCode: form.buildingCode.trim(),
+      role: "Building Manager",
     });
+    navigate("/dashboard");
   }
 
   return (
@@ -68,7 +69,7 @@ export default function StaffLoginPage({
           <button
             type="button"
             className="public-button public-button-ghost"
-            onClick={onBackToLanding}
+            onClick={() => navigate("/")}
           >
             Back to Landing
           </button>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   getVehicle,
@@ -34,10 +35,8 @@ function formatHour(value) {
   return `${hour}:00`;
 }
 
-export default function ChargingPortalPage({
-  onBackToLanding,
-  onOpenStaffLogin,
-}) {
+export default function ChargingPortalPage() {
+  const navigate = useNavigate();
   const [portalTab, setPortalTab] = useState("guest");
 
   const [vehicleId, setVehicleId] = useState("EV_001");
@@ -116,7 +115,7 @@ export default function ChargingPortalPage({
         <button
           type="button"
           className="public-button public-button-ghost"
-          onClick={onBackToLanding}
+          onClick={() => navigate("/")}
         >
           Back to Landing
         </button>
@@ -391,7 +390,7 @@ export default function ChargingPortalPage({
           <button
             type="button"
             className="vehicle-search-btn"
-            onClick={onOpenStaffLogin}
+            onClick={() => navigate("/login")}
           >
             Go to Staff Login
           </button>

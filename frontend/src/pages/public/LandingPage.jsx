@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 const NAV_LINKS = [
   { id: "problem", label: "Problem" },
   { id: "solution", label: "Solution" },
@@ -103,10 +105,9 @@ const SECURITY_CARDS = [
   },
 ];
 
-export default function LandingPage({
-  onOpenChargingPortal,
-  onOpenStaffLogin,
-}) {
+export default function LandingPage() {
+  const navigate = useNavigate();
+
   function handleScrollTo(sectionId) {
     const element = window.document.getElementById(sectionId);
 
@@ -148,14 +149,14 @@ export default function LandingPage({
           <button
             type="button"
             className="public-button public-button-ghost"
-            onClick={onOpenChargingPortal}
+            onClick={() => navigate("/portal")}
           >
             Check or Schedule My EV
           </button>
           <button
             type="button"
             className="public-button public-button-primary"
-            onClick={onOpenStaffLogin}
+            onClick={() => navigate("/login")}
           >
             Staff Login
           </button>
@@ -176,14 +177,14 @@ export default function LandingPage({
             <button
               type="button"
               className="public-button public-button-primary"
-              onClick={onOpenChargingPortal}
+              onClick={() => navigate("/portal")}
             >
               Check or Schedule My EV
             </button>
             <button
               type="button"
               className="public-button public-button-ghost"
-              onClick={onOpenStaffLogin}
+              onClick={() => navigate("/login")}
             >
               Staff Login
             </button>
