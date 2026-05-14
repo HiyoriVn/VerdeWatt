@@ -1,6 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
-from ai.load_forecaster import generate_forecast_response
+from ai.load_forecaster import (
+    generate_forecast_response,
+    generate_forecast_response_fallback,
+)
 
 router = APIRouter(prefix="/api", tags=["forecast"])
 
@@ -10,5 +13,5 @@ def get_forecast() -> dict:
     """Return next-6-hour base load forecast from lightweight RandomForest model."""
     try:
         return generate_forecast_response()
-    except ModuleNotFoundError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ModuleNotFoundError:
+        return generate_forecast_response_fallback()

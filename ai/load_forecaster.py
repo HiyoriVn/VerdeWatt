@@ -198,6 +198,62 @@ def generate_forecast_response(
     }
 
 
+def generate_forecast_response_fallback(
+    csv_path: Path = DEFAULT_DATA_PATH,
+    horizon_hours: int = FORECAST_HORIZON_HOURS,
+) -> Dict[str, Any]:
+    """Return a dependency-light fallback forecast with the same response contract."""
+    base_df = load_base_profile(csv_path)
+    unmanaged_by_hour = {
+        int(row["hour"]): float(row["unmanaged_ev_load_kw"]) for _, row in base_df.iterrows()
+    }
+    baseline_by_hour = {
+        int(row["hour"]): float(row["base_load_kw"]) for _, row in base_df.iterrows()
+    }
+
+    history_loads = base_df["base_load_kw"].astype(float).tolist()
+    last_known_hour = int(base_df["hour"].iloc[-1])
+    predictions: List[Dict[str, Any]] = []
+
+    for step in range(1, horizon_hours + 1):
+        forecast_hour = (last_known_hour + step) % 24
+
+        weighted_recent = (
+            history_loads[-1] * 0.5
+            + history_loads[-2] * 0.3
+            + history_loads[-3] * 0.2
+        )
+        baseline = baseline_by_hour.get(forecast_hour, weighted_recent)
+        unmanaged_hint = unmanaged_by_hour.get(forecast_hour, 0.0)
+
+        # Blend recent trend with hourly baseline and a small unmanaged-load hint.
+        predicted_load = 0.65 * weighted_recent + 0.3 * baseline + 0.05 * unmanaged_hint
+        predicted_load = max(0.0, float(predicted_load))
+
+        history_loads.append(predicted_load)
+        predictions.append(
+            {
+                "hour": int(forecast_hour),
+                "predicted_base_load_kw": round(predicted_load, 2),
+                "is_peak_hour": forecast_hour in PEAK_HOURS,
+            }
+        )
+
+    feature_importance = [
+        {"feature": "previous_1h_load", "importance": 0.5},
+        {"feature": "previous_2h_load", "importance": 0.3},
+        {"feature": "previous_3h_load", "importance": 0.2},
+    ]
+
+    return {
+        "model": "WeightedMovingAverageFallback",
+        "forecast_horizon_hours": horizon_hours,
+        "predictions": predictions,
+        "feature_importance": feature_importance,
+        "note": "Fallback mode: using weighted moving average because model dependencies are unavailable.",
+    }
+
+
 def print_cli_summary(response: Dict[str, Any]) -> None:
     """Print beginner-friendly CLI output."""
     print("VerdeWatt Load Forecast (RandomForestRegressor)")
