@@ -56,6 +56,14 @@ async function request(
 }
 
 /* =========================
+   HEALTH
+========================= */
+
+export function getHealth() {
+  return request("/health");
+}
+
+/* =========================
    LOAD
 ========================= */
 
