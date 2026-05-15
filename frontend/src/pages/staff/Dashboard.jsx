@@ -62,7 +62,7 @@ const TAB_DETAILS = {
   "billing-energy": {
     title: "Billing & Energy",
     subtitle:
-      "Simulated billing and energy-shifting outcomes for management reporting.",
+      "Estimated billing and energy-shifting outcomes for management reporting.",
   },
   security: {
     title: "Security",
@@ -551,7 +551,7 @@ export default function Dashboard({
           <div className="section-title-wrap">
             <h3 style={{ fontSize: '22px' }}>Billing KPI Cards</h3>
             <p>
-              Simulated billing outcomes for shifted
+              Estimated billing outcomes for shifted
               charging behavior and tariff impact.
             </p>
           </div>
@@ -562,9 +562,9 @@ export default function Dashboard({
         <section className="card glass-card">
           <h3 style={{ fontSize: '22px' }}>Billing Notes</h3>
           <p className="muted-text">
-            Estimated costs and savings are simulation
-            outputs intended for planning discussions,
-            not real payment processing.
+            Estimated costs and savings support planning
+            and resident communication. Payment processing
+            is handled according to your property’s policies.
           </p>
         </section>
       </div>
@@ -601,7 +601,7 @@ export default function Dashboard({
         <section className="card glass-card settings-grid">
           <div>
             <h4>Building Name</h4>
-            <p>VerdeWatt Demo Tower</p>
+            <p>Your managed property</p>
           </div>
 
           <div>
@@ -612,8 +612,7 @@ export default function Dashboard({
           <div>
             <h4>Tariff Assumption</h4>
             <p>
-              Peak/off-peak simulation from billing
-              API sample outputs.
+              Peak and off-peak rates configured for your building.
             </p>
           </div>
 

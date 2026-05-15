@@ -117,7 +117,7 @@ export default function ChargingPortalPage() {
           className="public-button public-button-ghost"
           onClick={() => navigate("/")}
         >
-          Back to Landing
+          Back to home
         </button>
       </section>
 
