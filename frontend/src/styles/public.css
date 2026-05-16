@@ -3693,3 +3693,174 @@
     width: 100%;
   }
 }
+
+/* =========================================================
+   Visual Audit Layout Fixes (targeted, no feature changes)
+========================================================= */
+.public-flow .lp-reveal,
+.public-flow .lp-reveal-child {
+  opacity: 1;
+  transform: none;
+}
+
+.public-flow .landing-page.public-page {
+  --lp-content-max: min(1460px, 100%);
+  --lp-content-wide: min(1560px, 100%);
+}
+
+.public-flow .landing-page .hero-inner {
+  max-width: min(1560px, 100%);
+}
+
+.public-flow .landing-page .hero-left {
+  min-width: 0;
+}
+
+.public-flow .landing-page .hero-headline {
+  max-width: 12ch;
+  overflow-wrap: anywhere;
+}
+
+.public-flow .landing-page .lp-section__inner {
+  padding-inline: clamp(20px, 2.8vw, 42px);
+}
+
+.public-flow .landing-page #impact .lp-metric-band__inner {
+  padding: clamp(30px, 3.2vw, 48px);
+}
+
+.public-flow .landing-page .lp-metric-card {
+  background: rgba(242, 248, 232, 0.97);
+  border-color: rgba(133, 168, 95, 0.58);
+}
+
+.public-flow .landing-page .lp-metric-card p {
+  color: #2f3d25;
+}
+
+.public-flow .landing-page .lp-metric-card strong {
+  color: #182512;
+}
+
+.public-flow .portal-hero__overlay {
+  background: linear-gradient(
+    108deg,
+    rgba(248, 250, 244, 0.95) 2%,
+    rgba(248, 250, 244, 0.82) 36%,
+    rgba(248, 250, 244, 0.68) 58%,
+    rgba(248, 250, 244, 0.75) 100%
+  );
+}
+
+.public-flow .portal-page .public-panel,
+.public-flow .staff-login-page .public-panel {
+  border-radius: 24px;
+}
+
+.public-flow .portal-form-grid label,
+.public-flow .staff-login-form label {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.public-flow .vehicle-input {
+  min-width: 0;
+}
+
+.public-flow .portal-page,
+.public-flow .staff-login-page,
+.public-flow .landing-page {
+  overflow-x: clip;
+}
+
+@media (max-width: 1120px) {
+  .public-flow .landing-page .public-header {
+    grid-template-columns: 1fr auto;
+    column-gap: 12px;
+  }
+
+  .public-flow .landing-page .lp-nav-toggle {
+    min-width: 64px;
+    height: 36px;
+    padding: 0 12px;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 760px) {
+  .public-flow .landing-page .public-header {
+    padding: 12px;
+    grid-template-columns: 1fr auto;
+    row-gap: 10px;
+  }
+
+  .public-flow .landing-page .public-brand {
+    min-width: 0;
+  }
+
+  .public-flow .landing-page .public-brand .lp-brand {
+    gap: 8px;
+  }
+
+  .public-flow .landing-page .public-brand-text {
+    font-size: 15px;
+  }
+
+  .public-flow .landing-page .hero-headline {
+    font-size: clamp(36px, 10.6vw, 44px);
+    line-height: 1.04;
+  }
+
+  .public-flow .landing-page .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .public-flow .landing-page .hero-actions .public-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .public-flow .landing-page .hero-btn-text {
+    width: 100%;
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .public-flow .landing-page .hero-right--stacked .hero-card {
+    border-radius: 14px;
+    padding: 18px 14px;
+  }
+
+  .public-flow .portal-hero__content {
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .public-flow .portal-hero h1 {
+    font-size: clamp(32px, 9vw, 40px);
+    line-height: 1.08;
+  }
+
+  .public-flow .portal-hero p {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .public-flow .portal-page .public-panel,
+  .public-flow .staff-login-page .public-panel {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .public-flow .staff-login-copy h1 {
+    font-size: clamp(36px, 10vw, 44px);
+    line-height: 1.04;
+  }
+
+  .public-flow .staff-benefits-list {
+    gap: 8px;
+    margin: 16px 0 22px;
+  }
+}

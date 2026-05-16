@@ -10,5 +10,8 @@ __pycache__/
 
 # Generated artifacts
 frontend/dist/
+frontend/audit-screenshots/
+test-results/
+playwright-report/
 *.zip
 patch*.py
