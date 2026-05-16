@@ -6,7 +6,7 @@ import LandingFooter from "../../components/landing/LandingFooter";
 import LandingStickyCta from "../../components/landing/LandingStickyCta";
 import { useLandingLiveStats } from "../../hooks/useLandingLiveStats";
 import { applyLandingMeta, resetAppMeta } from "../../utils/landingMeta";
-import heroImage from "../../assets/landingpage/unname2.png";
+import heroImage from "../../assets/landingpage/screen7.png";
 import challengeImage from "../../assets/landingpage/screen1.png";
 import workflowImage from "../../assets/landingpage/screen4.png";
 import impactImage from "../../assets/landingpage/screen6.png";
@@ -18,7 +18,6 @@ const NAV_LINKS = [
   { id: "results", label: "Results" },
   { id: "how-it-works", label: "How it works" },
   { id: "impact", label: "Impact" },
-  { id: "plans", label: "Plans" },
   { id: "security", label: "Security" },
   { id: "cta", label: "Contact" },
 ];
@@ -126,16 +125,14 @@ const SECURITY_CARDS = [
   },
 ];
 
-function SectionHead({ chip, title, titleVi, subtitle, centered = false }) {
+function SectionHead({ chip, title, subtitle, centered = false }) {
   return (
     <div
-      className={`public-section-head${
-        centered ? " public-section-head--center" : ""
-      }`}
+      className={`public-section-head${centered ? " public-section-head--center" : ""
+        }`}
     >
       <p className="public-chip">{chip}</p>
       <h2>{title}</h2>
-      {titleVi ? <p className="lp-section-head__vi">{titleVi}</p> : null}
       {subtitle ? <p className="lp-section-head__sub">{subtitle}</p> : null}
     </div>
   );
@@ -191,16 +188,16 @@ export default function LandingPage() {
     const revealObserver =
       revealElements.length > 0
         ? new IntersectionObserver(
-            (entries) => {
-              entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                  entry.target.classList.add("is-visible");
-                  revealObserver.unobserve(entry.target);
-                }
-              });
-            },
-            { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
-          )
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                revealObserver.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+        )
         : null;
 
     revealElements.forEach((element) => revealObserver?.observe(element));
@@ -212,19 +209,19 @@ export default function LandingPage() {
     const spyObserver =
       spySections.length > 0
         ? new IntersectionObserver(
-            (entries) => {
-              const visible = entries
-                .filter((entry) => entry.isIntersecting)
-                .sort(
-                  (a, b) => b.intersectionRatio - a.intersectionRatio
-                );
+          (entries) => {
+            const visible = entries
+              .filter((entry) => entry.isIntersecting)
+              .sort(
+                (a, b) => b.intersectionRatio - a.intersectionRatio
+              );
 
-              if (visible[0]?.target?.id) {
-                setActiveSection(visible[0].target.id);
-              }
-            },
-            { threshold: [0.2, 0.45, 0.6], rootMargin: "-20% 0px -55% 0px" }
-          )
+            if (visible[0]?.target?.id) {
+              setActiveSection(visible[0].target.id);
+            }
+          },
+          { threshold: [0.2, 0.45, 0.6], rootMargin: "-20% 0px -55% 0px" }
+        )
         : null;
 
     spySections.forEach((section) => spyObserver?.observe(section));
@@ -266,6 +263,7 @@ export default function LandingPage() {
 
   return (
     <div className="public-page landing-page" id="main-content">
+
       <a className="lp-skip-link" href="#top">
         Skip to content
       </a>
@@ -337,17 +335,17 @@ export default function LandingPage() {
       ) : null}
 
       <section className="landing-hero" id="top">
-        <div className="hero-illustration-wrap">
+        {/* Hero watercolor background — confined to hero only */}
+        <div className="hero-bg-wrap" aria-hidden="true">
           <img
             src={heroImage}
-            alt="EV charging station in a smart building garage"
-            className="hero-illustration"
+            alt=""
+            className="hero-bg-img"
             fetchPriority="high"
             loading="eager"
             decoding="async"
-            width={1920}
-            height={1080}
           />
+          <div className="hero-bg-fade" />
         </div>
 
         <div className="hero-inner">
@@ -359,9 +357,6 @@ export default function LandingPage() {
               orchestration<br />
               for smart buildings
             </h1>
-            <p className="lp-section-head__vi hero-headline-vi">
-              Nền tảng điều phối sạc EV an toàn cho chung cư và tòa nhà thông minh
-            </p>
             <p className="hero-subtext">
               Help your building stay within safe electrical capacity, give residents
               a smoother charging experience, and give operators clear visibility
@@ -384,73 +379,6 @@ export default function LandingPage() {
               </button>
             </div>
           </div>
-
-          <div className="hero-right hero-right--stacked">
-            <div className="hero-card hero-card--load">
-              <p className="hero-card__label">Live building load</p>
-              <div className="hero-card__body">
-                <div className="hero-card__nums">
-                  <span className="hero-card__value">
-                    {statsLoading ? "…" : heroStats.currentLoadKw}
-                  </span>
-                  <span className="hero-card__unit">kW</span>
-                </div>
-                <div className="hero-card__ring">
-                  <svg viewBox="0 0 80 80" aria-hidden="true">
-                    <circle cx="40" cy="40" r="32" className="hero-card__ring-bg" />
-                    <circle
-                      cx="40"
-                      cy="40"
-                      r="32"
-                      className="hero-card__ring-fill"
-                      strokeDasharray="201"
-                      strokeDashoffset={statsLoading ? 8 : heroStats.ringOffset}
-                    />
-                  </svg>
-                  <span className="hero-card__ring-text">
-                    {statsLoading ? "…" : `${heroStats.capacityPercent}%`}
-                  </span>
-                </div>
-              </div>
-              <p className="hero-card__sub hero-card__sub--capacity">
-                of {statsLoading ? "…" : heroStats.safeCapacityKw} kW safe capacity
-              </p>
-              <div className="hero-card__bar">
-                <div
-                  className="hero-card__bar-fill"
-                  style={{
-                    width: statsLoading
-                      ? "96%"
-                      : `${heroStats.capacityPercent}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="hero-card hero-card--sessions">
-              <div>
-                <p className="hero-card__label">Active sessions</p>
-                <div className="hero-card__nums">
-                  <span className="hero-card__value">
-                    {statsLoading ? "…" : heroStats.sessionCount}
-                  </span>
-                </div>
-                <p className="hero-card__delta">
-                  {apiOnline ? "Updated in real time" : "Connect your building to sync"}
-                </p>
-              </div>
-            </div>
-
-            <div className="hero-card hero-card--peak">
-              <div>
-                <p className="hero-card__label">Peak reduction</p>
-                <span className="hero-card__value hero-card__value--green">
-                  {statsLoading ? "…" : `${peakReductionPercent}%`}
-                </span>
-                <p className="hero-card__sub">vs unmanaged charging</p>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -462,20 +390,43 @@ export default function LandingPage() {
           <SectionHead
             chip="Challenge"
             title="Why unmanaged charging is risky in high-rise apartments"
-            titleVi="Vì sao sạc EV không kiểm soát gây quá tải vào giờ cao điểm"
             subtitle="Evening peak (18:00–22:00) is when unmanaged charging most often exceeds safe capacity."
             centered
           />
           <div className="lp-challenge-showcase">
             <figure className="lp-challenge-showcase__visual">
-              <img
-                src={challengeImage}
-                alt="Underground EV parking with smart charging hubs"
-                loading="lazy"
-                decoding="async"
-                width={960}
-                height={720}
-              />
+              <div className="lp-challenge-showcase__img-wrap">
+                <img
+                  src={challengeImage}
+                  alt="Underground EV parking with smart charging hubs"
+                  loading="lazy"
+                  decoding="async"
+                  width={960}
+                  height={720}
+                />
+                {/* Overlay badge */}
+                <div className="lp-challenge-overlay-badge">
+                  <span className="lp-challenge-overlay-badge__dot" />
+                  Peak Risk Zone
+                </div>
+                {/* Overlay stats strip */}
+                <div className="lp-challenge-overlay-strip">
+                  <div className="lp-challenge-overlay-strip__item">
+                    <strong>18:00–22:00</strong>
+                    <span>Peak window</span>
+                  </div>
+                  <div className="lp-challenge-overlay-strip__divider" />
+                  <div className="lp-challenge-overlay-strip__item">
+                    <strong>{statsLoading ? "…" : heroStats.sessionCount}+ EVs</strong>
+                    <span>Charging at once</span>
+                  </div>
+                  <div className="lp-challenge-overlay-strip__divider" />
+                  <div className="lp-challenge-overlay-strip__item lp-challenge-overlay-strip__item--danger">
+                    <strong>Overload risk</strong>
+                    <span>Without smart control</span>
+                  </div>
+                </div>
+              </div>
               <figcaption>Shared basement hubs · one building transformer</figcaption>
             </figure>
 
@@ -533,6 +484,166 @@ export default function LandingPage() {
                 />
               </div>
 
+              {/* Modern 2-line area chart */}
+              {(() => {
+                const W = 260, H = 120;
+                const PAD = { t: 30, r: 12, b: 28, l: 28 };
+                const safeKw = statsLoading ? 120 : heroStats.safeCapacityKw;
+                const peak = statsLoading ? 154 : peakBeforeKw;
+
+                // Load curve points (rises to peak at 20h, falls after)
+                const loadPts = [
+                  { h: 17, kw: Math.round(safeKw * 0.62) },
+                  { h: 18, kw: Math.round(safeKw * 0.78) },
+                  { h: 19, kw: Math.round(peak * 0.86) },
+                  { h: 20, kw: peak },
+                  { h: 21, kw: Math.round(peak * 0.91) },
+                  { h: 22, kw: Math.round(safeKw * 0.79) },
+                  { h: 23, kw: Math.round(safeKw * 0.58) },
+                ];
+                const maxKw = peak * 1.12;
+                const chartW = W - PAD.l - PAD.r;
+                const chartH = H - PAD.t - PAD.b;
+
+                const toX = (i) => PAD.l + (i / (loadPts.length - 1)) * chartW;
+                const toY = (kw) => PAD.t + chartH - (kw / maxKw) * chartH;
+
+                // Smooth cubic bezier for a set of points
+                const buildPath = (pts) => {
+                  let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+                  for (let i = 1; i < pts.length; i++) {
+                    const cpx = ((pts[i - 1].x + pts[i].x) / 2).toFixed(1);
+                    d += ` C ${cpx} ${pts[i - 1].y.toFixed(1)}, ${cpx} ${pts[i].y.toFixed(1)}, ${pts[i].x.toFixed(1)} ${pts[i].y.toFixed(1)}`;
+                  }
+                  return d;
+                };
+
+                const loadCoords = loadPts.map((p, i) => ({ x: toX(i), y: toY(p.kw) }));
+                const safeY = toY(safeKw);
+                const safeCoords = loadPts.map((_, i) => ({ x: toX(i), y: safeY }));
+
+                const loadPath = buildPath(loadCoords);
+                const safePath = buildPath(safeCoords);
+
+                // Area fill between safe line and load line
+                const areaD = `${loadPath} L ${loadCoords[loadCoords.length - 1].x} ${safeY} L ${loadCoords[0].x} ${safeY} Z`;
+
+                // Peak marker at hour 20 (index 3)
+                const pkIdx = 3;
+                const pkX = loadCoords[pkIdx].x;
+                const pkY = loadCoords[pkIdx].y;
+
+                // Y-axis ticks
+                const yTicks = [0, 0.33, 0.66, 1].map((t) => ({
+                  y: PAD.t + chartH * (1 - t),
+                  val: Math.round(maxKw * t),
+                }));
+
+                // X-axis labels (show every other)
+                const xLabels = loadPts.filter((_, i) => i % 2 === 0);
+
+                return (
+                  <div className="lp-sparkline">
+                    <svg
+                      viewBox={`0 0 ${W} ${H}`}
+                      width="100%"
+                      preserveAspectRatio="xMidYMid meet"
+                      aria-label="Evening load vs safe capacity"
+                      style={{ display: "block", overflow: "visible" }}
+                    >
+                      <defs>
+                        {/* Gradient fill between safe line and load curve */}
+                        <linearGradient id="lp-area-fill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#e07a5f" stopOpacity="0.18" />
+                          <stop offset="100%" stopColor="#7ab832" stopOpacity="0.04" />
+                        </linearGradient>
+                      </defs>
+
+                      {/* Y-axis tick marks */}
+                      {yTicks.map((t) => (
+                        <g key={t.val}>
+                          <line x1={PAD.l - 4} y1={t.y} x2={PAD.l} y2={t.y} stroke="#c8d4be" strokeWidth="1" />
+                          <text x={PAD.l - 7} y={t.y + 3.5} textAnchor="end" fill="#a0b090" fontSize="7.5" fontFamily="inherit">{t.val}</text>
+                        </g>
+                      ))}
+
+                      {/* X-axis baseline */}
+                      <line x1={PAD.l} y1={PAD.t + chartH} x2={PAD.l + chartW} y2={PAD.t + chartH} stroke="#dde8d0" strokeWidth="1" />
+
+                      {/* Area fill */}
+                      <path d={areaD} fill="url(#lp-area-fill)" />
+
+                      {/* Safe capacity line */}
+                      <path d={safePath} fill="none" stroke="#7ab832" strokeWidth="1.8" strokeLinecap="round" opacity="0.7" strokeDasharray="5 3" />
+
+                      {/* Load curve */}
+                      <path d={loadPath} fill="none" stroke="#e07a5f" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+
+                      {/* Vertical dashed line at peak */}
+                      <line x1={pkX} y1={pkY + 8} x2={pkX} y2={PAD.t + chartH} stroke="#e07a5f" strokeWidth="1" strokeDasharray="3 3" opacity="0.5" />
+
+                      {/* Peak dot */}
+                      <circle cx={pkX} cy={pkY} r="5" fill="#fff" stroke="#e07a5f" strokeWidth="2.2" />
+                      <circle cx={pkX} cy={pkY} r="2" fill="#e07a5f" />
+
+                      {/* Dark pill tooltip */}
+                      <g transform={`translate(${pkX},${pkY - 12})`}>
+                        <rect x="-32" y="-24" width="64" height="22" rx="8" fill="#1e2a18" />
+                        <polygon points="-5,0 5,0 0,7" fill="#1e2a18" />
+                        <text x="0" y="-9" textAnchor="middle" fill="#ffffff" fontSize="10.5" fontWeight="800" fontFamily="inherit" letterSpacing="-0.3">
+                          {statsLoading ? "…" : `${peak} kW`}
+                        </text>
+                      </g>
+
+                      {/* X-axis hour labels */}
+                      {xLabels.map((p, idx) => {
+                        const i = loadPts.indexOf(p);
+                        return (
+                          <text key={p.h} x={toX(i)} y={H - 8} textAnchor="middle" fill="#9aaa8a" fontSize="8" fontWeight="700" fontFamily="inherit">
+                            {p.h}h
+                          </text>
+                        );
+                      })}
+
+                      {/* Safe line label */}
+                      <text x={PAD.l + chartW + 2} y={safeY + 4} fill="#7ab832" fontSize="7.5" fontWeight="700" fontFamily="inherit">cap</text>
+                    </svg>
+
+                    {/* Legend row */}
+                    <div className="lp-sparkline__legend">
+                      <span className="lp-sparkline__leg lp-sparkline__leg--load">
+                        <span className="lp-sparkline__leg-line" />
+                        Unmanaged load
+                      </span>
+                      <span className="lp-sparkline__leg lp-sparkline__leg--safe">
+                        <span className="lp-sparkline__leg-line lp-sparkline__leg-line--dashed" />
+                        Safe capacity
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Extra stats row */}
+              <div className="lp-challenge-meter__extra">
+                <div className="lp-challenge-meter__extra-item">
+                  <span className="lp-challenge-meter__extra-val lp-challenge-meter__extra-val--red">
+                    {statsLoading ? "…" : `+${Math.max(0, peakBeforeKw - heroStats.safeCapacityKw)} kW`}
+                  </span>
+                  <span className="lp-challenge-meter__extra-label">Over safe limit</span>
+                </div>
+                <div className="lp-challenge-meter__extra-item">
+                  <span className="lp-challenge-meter__extra-val">3 hrs</span>
+                  <span className="lp-challenge-meter__extra-label">At-risk window</span>
+                </div>
+                <div className="lp-challenge-meter__extra-item">
+                  <span className="lp-challenge-meter__extra-val lp-challenge-meter__extra-val--green">
+                    {statsLoading ? "…" : `−${peakReductionPercent}%`}
+                  </span>
+                  <span className="lp-challenge-meter__extra-label">With VerdeWatt</span>
+                </div>
+              </div>
+
               <div className="lp-challenge-meter__foot">
                 <p className="lp-challenge-meter__caption">
                   {statsLoading
@@ -566,294 +677,211 @@ export default function LandingPage() {
         id="results"
       >
         <div className="lp-section__inner">
-        <SectionHead
-          chip="Results"
-          title="Before vs after smart allocation"
-          titleVi="So sánh đỉnh tải trước và sau khi VerdeWatt điều phối"
-          subtitle={
-            apiOnline
-              ? "Live optimization results for your building’s evening peak window."
-              : "Connect your building to see personalized load and allocation results."
-          }
-          centered
-        />
-        <LandingAllocationCompare
-          peakBeforeKw={peakBeforeKw}
-          peakAfterKw={peakAfterKw}
-          peakReductionKw={peakReductionKw}
-          peakReductionPercent={peakReductionPercent}
-          peakAfterIsSafe={peakAfterIsSafe}
-          loading={statsLoading}
-        />
-        <div className="lp-compare-cta">
-          <button
-            type="button"
-            className="public-button public-button-primary"
-            onClick={() => navigate("/dashboard/allocation")}
-          >
-            Open allocation view
-          </button>
-          <button
-            type="button"
-            className="hero-btn-text"
-            onClick={goToOperatorSignIn}
-          >
-            Sign in to explore &rarr;
-          </button>
-        </div>
+          <SectionHead
+            chip="Results"
+            title="Before vs after smart allocation"
+            subtitle={
+              apiOnline
+                ? "Live optimization results for your building’s evening peak window."
+                : "Connect your building to see personalized load and allocation results."
+            }
+            centered
+          />
+          <LandingAllocationCompare
+            peakBeforeKw={peakBeforeKw}
+            peakAfterKw={peakAfterKw}
+            peakReductionKw={peakReductionKw}
+            peakReductionPercent={peakReductionPercent}
+            peakAfterIsSafe={peakAfterIsSafe}
+            loading={statsLoading}
+          />
+          <div className="lp-compare-cta">
+            <button
+              type="button"
+              className="public-button public-button-primary"
+              onClick={() => navigate("/dashboard/allocation")}
+            >
+              Open allocation view
+            </button>
+            <button
+              type="button"
+              className="hero-btn-text"
+              onClick={goToOperatorSignIn}
+            >
+              Sign in to explore &rarr;
+            </button>
+          </div>
         </div>
       </section>
 
       <section className="public-section lp-section lp-reveal" id="how-it-works">
         <div className="lp-section__inner lp-section__inner--wide">
-        <div className="lp-how-layout">
-          <div className="lp-how-layout__copy">
-            <SectionHead
-              chip="How it works"
-              title="A clear workflow for your operations team"
-              titleVi="Quy trình vận hành rõ ràng cho ban quản lý"
-              subtitle="Forecast → Schedule → Optimize → Operate — the same flow your team uses every day."
-              centered
-            />
-            <ol className="lp-steps lp-steps--stacked">
-              {WORKFLOW_STEPS.map((step, index) => (
-                <li key={step.keyword} className="lp-card lp-step">
-                  <span className="lp-step__num">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <div className="lp-step__body">
-                    <p className="lp-step__keyword">{step.keyword}</p>
-                    <p className="lp-step__text">{step.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <p className="lp-steps-note">
-              Already a customer?{" "}
-              <button
-                type="button"
-                className="hero-btn-text"
-                onClick={goToOperatorSignIn}
-              >
-                Sign in with your operator account &rarr;
-              </button>
+          <div className="lp-how-layout">
+            <div className="lp-how-layout__copy">
+              <SectionHead
+                chip="How it works"
+                title="A clear workflow for your operations team"
+                subtitle="Forecast → Schedule → Optimize → Operate — the same flow your team uses every day."
+                centered
+              />
+              <ol className="lp-steps lp-steps--stacked">
+                {WORKFLOW_STEPS.map((step, index) => (
+                  <li key={step.keyword} className="lp-card lp-step">
+                    <span className="lp-step__num">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div className="lp-step__body">
+                      <p className="lp-step__keyword">{step.keyword}</p>
+                      <p className="lp-step__text">{step.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <p className="lp-steps-note">
+                Already a customer?{" "}
+                <button
+                  type="button"
+                  className="hero-btn-text"
+                  onClick={goToOperatorSignIn}
+                >
+                  Sign in with your operator account &rarr;
+                </button>
+              </p>
+            </div>
+            <div className="lp-how-layout__aside">
+              <figure className="lp-how-workflow">
+                <img
+                  src={workflowImage}
+                  alt="EV charging hub connected to building power infrastructure"
+                  loading="lazy"
+                  decoding="async"
+                  width={1200}
+                  height={675}
+                />
+                <figcaption>
+                  Coordinate grid headroom with on-site charging in real time.
+                </figcaption>
+              </figure>
+              <LandingDashboardPreview
+                peakReductionPercent={peakReductionPercent}
+                evsServedLabel={evsServedLabel}
+                alertCount={alertCount}
+                loading={statsLoading}
+                chartData={chartData}
+                apiOnline={apiOnline}
+                onOpenDashboard={() => navigate("/dashboard")}
+              />
+            </div>
+          </div>
+          <div className="lp-quote-band">
+            <p className="lp-quote-band__text">
+              One platform for forecasting, smart scheduling, cost visibility, and
+              security monitoring — built for high-rise properties.
             </p>
           </div>
-          <div className="lp-how-layout__aside">
-            <figure className="lp-how-workflow">
-              <img
-                src={workflowImage}
-                alt="EV charging hub connected to building power infrastructure"
-                loading="lazy"
-                decoding="async"
-                width={1200}
-                height={675}
-              />
-              <figcaption>
-                Coordinate grid headroom with on-site charging in real time.
-              </figcaption>
-            </figure>
-            <LandingDashboardPreview
-              peakReductionPercent={peakReductionPercent}
-              evsServedLabel={evsServedLabel}
-              alertCount={alertCount}
-              loading={statsLoading}
-              chartData={chartData}
-              apiOnline={apiOnline}
-              onOpenDashboard={() => navigate("/dashboard")}
-            />
-          </div>
-        </div>
-        <div className="lp-quote-band">
-          <p className="lp-quote-band__text">
-            One platform for forecasting, smart scheduling, cost visibility, and
-            security monitoring — built for high-rise properties.
-          </p>
-        </div>
         </div>
       </section>
 
       <section
-        className="public-section lp-section lp-section--flush lp-reveal"
+        className="public-section lp-section lp-reveal"
         id="impact"
       >
-        <div className="lp-metric-band">
-          <img
-            src={impactImage}
-            alt=""
-            className="lp-metric-band__bg lp-metric-band__bg--impact"
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-          />
-          <div className="lp-metric-band__overlay" />
-          <div className="lp-metric-band__inner">
-            <div className="lp-metric-band__head">
-              <p className="public-chip public-chip--light">Impact</p>
-              <h2>Practical KPIs for operators and ESG reporting</h2>
-              <p className="lp-section-head__vi lp-metric-band__vi">
-                Theo dõi tiết kiệm năng lượng và tác động môi trường
-              </p>
-              <p className="lp-metric-band__sub">
-                {apiOnline
-                  ? "Updated from your building’s latest charging and optimization data."
-                  : "Estimated outcomes when charging is coordinated vs unmanaged."}
-              </p>
-            </div>
-            <div className="lp-card-grid lp-card-grid--3 lp-metric-grid">
-              {impactMetrics.map((metric) => (
-                <article key={metric.label} className="lp-card lp-metric-card">
-                  <p>{metric.label}</p>
-                  <strong>{metric.value}</strong>
-                </article>
-              ))}
+        <div className="lp-section__inner">
+          <div className="lp-metric-band lp-metric-band--glass">
+            <img
+              src={impactImage}
+              alt=""
+              className="lp-metric-band__bg"
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="lp-metric-band__glass-overlay" />
+            <div className="lp-metric-band__inner">
+              <div className="lp-metric-band__head">
+                <p className="public-chip public-chip--light">Impact</p>
+                <h2>Practical KPIs for operators and ESG reporting</h2>
+                <p className="lp-metric-band__sub">
+                  {apiOnline
+                    ? "Updated from your building’s latest charging and optimization data."
+                    : "Estimated outcomes when charging is coordinated vs unmanaged."}
+                </p>
+              </div>
+              <div className="lp-card-grid lp-card-grid--3 lp-metric-grid">
+                {impactMetrics.map((metric) => (
+                  <article key={metric.label} className="lp-card lp-metric-card">
+                    <p>{metric.label}</p>
+                    <strong>{metric.value}</strong>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="public-section lp-section lp-reveal" id="plans">
-        <div className="lp-section__inner">
-        <SectionHead
-          chip="Plans"
-          title="Choose the experience that fits your role"
-          titleVi="Chọn trải nghiệm phù hợp với bạn"
-          subtitle="Residents, building operators, and portfolio teams each get tools tailored to their needs."
-          centered
-        />
-        <figure className="lp-plans-band">
-          <img
-            src={plansScaleImage}
-            alt="Residential, enterprise, and smart-city EV charging scale"
-            className="lp-plans-band__img"
-            loading="lazy"
-            decoding="async"
-            width={1600}
-            height={500}
-          />
-          <figcaption className="lp-plans-band__caption">
-            From a single tower to multi-site portfolios — one orchestration platform.
-          </figcaption>
-        </figure>
-        <div className="lp-card-grid lp-card-grid--3 lp-plans-grid">
-          {PRODUCT_OFFERINGS.map((role) => (
-            <article
-              key={role.name}
-              className={`lp-card lp-pricing-card lp-plan-card${
-                role.featured ? " lp-pricing-card--featured" : ""
-              }`}
-            >
-              <div className="lp-pricing-card__top">
-              {role.featured ? (
-                <p className="lp-pricing-card__badge">{role.role}</p>
-              ) : (
-                <p className="lp-pricing-card__badge lp-pricing-card__badge--muted">
-                  {role.role}
-                </p>
-              )}
-              </div>
-              <h3>{role.name}</h3>
-              <p className="lp-pricing-card__desc">{role.description}</p>
-              <ul>
-                {role.features.map((feature) => (
-                  <li key={feature}>{feature}</li>
-                ))}
-              </ul>
-              <button
-                type="button"
-                className={
-                  role.featured
-                    ? "public-button public-button-primary"
-                    : "public-button public-button-ghost"
-                }
-                onClick={() => {
-                  if (role.contact) {
-                    handleScrollTo("cta");
-                    return;
-                  }
-                  navigate(role.path);
-                }}
-              >
-                {role.cta}
-              </button>
-            </article>
-          ))}
-        </div>
         </div>
       </section>
 
       <section className="public-section lp-section lp-reveal" id="security">
         <div className="lp-section__inner">
-        <SectionHead
-          chip="Security"
-          title="Rule-based monitoring for safer EV infrastructure"
-          titleVi="Giám sát theo quy tắc — không dùng ML hộp đen"
-          subtitle="Three explainable anomaly rules with severity and suggested operator actions."
-          centered
-        />
-        <div className="lp-security-layout">
-          <div className="lp-security-layout__media">
-            <img
-              src={securityImage}
-              alt="Sustainable urban EV charging infrastructure sketch"
-              className="lp-split__img lp-split__img--focus-security"
-              loading="lazy"
-              decoding="async"
-            />
+          <SectionHead
+            chip="Security"
+            title="Rule-based monitoring for safer EV infrastructure"
+            subtitle="Three explainable anomaly rules with severity and suggested operator actions."
+            centered
+          />
+          <div className="lp-security-layout">
+            <div className="lp-security-layout__media">
+              <img
+                src={securityImage}
+                alt="Sustainable urban EV charging infrastructure sketch"
+                className="lp-split__img lp-split__img--focus-security"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div className="lp-card-grid lp-card-grid--3">
+              {SECURITY_CARDS.map((card) => {
+                const borderColor =
+                  card.severity === "High" ? "#e07a5f" :
+                    card.severity === "Medium" ? "#f0b429" : "#7ab832";
+                return (
+                  <article
+                    key={card.title}
+                    className="lp-card lp-alert-card"
+                    style={{ borderLeft: `3px solid ${borderColor}` }}
+                  >
+                    <div className="lp-alert-card__head">
+                      <span
+                        className={`lp-severity lp-severity--${card.severity.toLowerCase()}`}
+                      >
+                        {card.severity}
+                      </span>
+                      <h3>{card.title}</h3>
+                    </div>
+                    <p className="lp-card__text">{card.text}</p>
+                    <p className="lp-alert-card__action">
+                      <strong>Suggested:</strong> {card.action}
+                    </p>
+                  </article>
+                );
+              })}
+            </div>
           </div>
-          <div className="lp-card-grid lp-card-grid--3">
-          {SECURITY_CARDS.map((card) => (
-            <article key={card.title} className="lp-card lp-alert-card">
-              <div className="lp-alert-card__head">
-                <span
-                  className={`lp-severity lp-severity--${card.severity.toLowerCase()}`}
-                >
-                  {card.severity}
-                </span>
-                <h3>{card.title}</h3>
-              </div>
-              <p className="lp-card__text">{card.text}</p>
-              <p className="lp-alert-card__action">
-                <strong>Suggested:</strong> {card.action}
-              </p>
-            </article>
-          ))}
+          <div className="lp-section-actions lp-section-actions--center">
+            <button
+              type="button"
+              className="hero-btn-text"
+              onClick={() => navigate("/dashboard/security")}
+            >
+              View security feed in dashboard &rarr;
+            </button>
           </div>
-        </div>
-        <div className="lp-section-actions lp-section-actions--center">
-          <button
-            type="button"
-            className="hero-btn-text"
-            onClick={() => navigate("/dashboard/security")}
-          >
-            View security feed in dashboard &rarr;
-          </button>
-        </div>
         </div>
       </section>
-
-      <div className="lp-trust lp-reveal">
-        <div className="lp-section__inner">
-        <p className="lp-trust__label">Why buildings choose VerdeWatt</p>
-        <div className="lp-card-grid lp-card-grid--4 lp-trust-logos">
-          {trustMetrics.map((metric) => (
-            <div key={metric.label} className="lp-card lp-trust-partner">
-              <span className="lp-trust-partner__mark">{metric.abbr}</span>
-              <span className="lp-trust-logo">{metric.label}</span>
-              <strong className="lp-trust-metric">{metric.value}</strong>
-            </div>
-          ))}
-        </div>
-        </div>
-      </div>
 
       <section className="lp-cta lp-reveal" id="cta">
         <div className="lp-cta__inner">
           <p className="public-chip">Get started</p>
           <h2>Ready to bring smarter EV charging to your building?</h2>
-          <p className="lp-section-head__vi">
-            Sẵn sàng triển khai sạc EV thông minh cho tòa nhà của bạn?
-          </p>
           <p>
             Talk to our team about a pilot, or sign in if your property already
             uses VerdeWatt.

@@ -25,13 +25,6 @@ export default function LandingDashboardPreview({
 
   return (
     <div className="lp-dash-preview" aria-label="Dashboard preview">
-      <div className="lp-dash-preview__chrome">
-        <span className="lp-dash-preview__dot" />
-        <span className="lp-dash-preview__dot" />
-        <span className="lp-dash-preview__dot" />
-        <span className="lp-dash-preview__title">VerdeWatt — Energy Control Center</span>
-      </div>
-
       <div className="lp-dash-preview__kpis">
         <div className="lp-dash-preview__kpi">
           <span className="lp-dash-preview__kpi-label">Peak reduction</span>
