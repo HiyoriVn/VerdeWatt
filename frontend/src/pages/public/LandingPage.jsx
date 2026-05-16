@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LandingAllocationCompare from "../../components/landing/LandingAllocationCompare";
+import BrandIdentity from "../../components/landing/BrandIdentity";
 import LandingDashboardPreview from "../../components/landing/LandingDashboardPreview";
 import LandingFooter from "../../components/landing/LandingFooter";
 import LandingStickyCta from "../../components/landing/LandingStickyCta";
@@ -72,7 +73,7 @@ const PROBLEM_CARDS = [
   {
     tag: "Peak hours",
     title: "Peak overload risk",
-    text: "Between 18:00–22:00, unmanaged EV demand can push total load above your safe capacity limit.",
+    text: "Between 18:00-22:00, unmanaged EV demand can push total load above your safe capacity limit.",
   },
   {
     tag: "Infrastructure",
@@ -126,7 +127,7 @@ const SECURITY_CARDS = [
   },
 ];
 
-function SectionHead({ chip, title, titleVi, subtitle, centered = false }) {
+function SectionHead({ chip, title, subtitle, centered = false }) {
   return (
     <div
       className={`public-section-head${
@@ -135,7 +136,6 @@ function SectionHead({ chip, title, titleVi, subtitle, centered = false }) {
     >
       <p className="public-chip">{chip}</p>
       <h2>{title}</h2>
-      {titleVi ? <p className="lp-section-head__vi">{titleVi}</p> : null}
       {subtitle ? <p className="lp-section-head__sub">{subtitle}</p> : null}
     </div>
   );
@@ -161,26 +161,30 @@ export default function LandingPage() {
     alertCount,
   } = useLandingLiveStats();
 
-  const trustMetrics = [
+  const co2Metric =
+    impactMetrics.find((metric) => metric.label === "CO2 avoided")
+      ?.value || "—";
+
+  const dataSourceLabel = apiOnline
+    ? "Live API data"
+    : "Sample scenario";
+
+  const liveStatusPills = [
     {
-      abbr: "PEAK",
+      label: "API status",
+      value: apiOnline ? "Online" : "Offline",
+    },
+    {
       label: "Peak reduction",
-      value: statsLoading ? "…" : `−${peakReductionPercent}%`,
+      value: statsLoading ? "..." : `-${peakReductionPercent}%`,
     },
     {
-      abbr: "EV",
       label: "Active sessions",
-      value: statsLoading ? "…" : String(heroStats.sessionCount),
+      value: statsLoading ? "..." : String(heroStats.sessionCount),
     },
     {
-      abbr: "RULE",
-      label: "Security rules",
-      value: "3",
-    },
-    {
-      abbr: "ALERT",
-      label: "Active alerts",
-      value: statsLoading ? "…" : String(alertCount),
+      label: "CO2 avoided",
+      value: statsLoading ? "..." : co2Metric,
     },
   ];
 
@@ -272,14 +276,14 @@ export default function LandingPage() {
 
       <LandingStickyCta onScrollTo={handleScrollTo} onNavigate={navigate} />
 
+      <div className="lp-container lp-container--header">
       <header className="public-header">
         <button
           type="button"
           className="public-brand"
           onClick={() => handleScrollTo("top")}
         >
-          <span className="public-brand-mark">VW</span>
-          <span className="public-brand-text">VerdeWatt</span>
+          <BrandIdentity />
         </button>
 
         <button
@@ -307,6 +311,28 @@ export default function LandingPage() {
               {link.label}
             </button>
           ))}
+          <div className="public-nav-mobile-actions">
+            <button
+              type="button"
+              className="public-button public-button-ghost"
+              onClick={() => {
+                setNavOpen(false);
+                navigate("/portal");
+              }}
+            >
+              Resident portal
+            </button>
+            <button
+              type="button"
+              className="public-button public-button-primary"
+              onClick={() => {
+                setNavOpen(false);
+                goToOperatorSignIn();
+              }}
+            >
+              Sign in
+            </button>
+          </div>
         </nav>
 
         <div className="public-header-actions">
@@ -326,6 +352,7 @@ export default function LandingPage() {
           </button>
         </div>
       </header>
+      </div>
 
       {navOpen ? (
         <button
@@ -359,14 +386,22 @@ export default function LandingPage() {
               orchestration<br />
               for smart buildings
             </h1>
-            <p className="lp-section-head__vi hero-headline-vi">
-              Nền tảng điều phối sạc EV an toàn cho chung cư và tòa nhà thông minh
-            </p>
             <p className="hero-subtext">
               Help your building stay within safe electrical capacity, give residents
               a smoother charging experience, and give operators clear visibility
               every evening peak.
             </p>
+            <p className="lp-live-source">{dataSourceLabel}</p>
+            <div className="lp-live-pills" aria-label="Live status summary">
+              {liveStatusPills.map((metric) => (
+                <div key={metric.label} className="lp-live-pill">
+                  <span className="lp-live-pill__label">{metric.label}</span>
+                  <strong className="lp-live-pill__value">
+                    {metric.value || "—"}
+                  </strong>
+                </div>
+              ))}
+            </div>
             <div className="hero-actions">
               <button
                 type="button"
@@ -391,7 +426,7 @@ export default function LandingPage() {
               <div className="hero-card__body">
                 <div className="hero-card__nums">
                   <span className="hero-card__value">
-                    {statsLoading ? "…" : heroStats.currentLoadKw}
+                    {statsLoading ? "..." : heroStats.currentLoadKw}
                   </span>
                   <span className="hero-card__unit">kW</span>
                 </div>
@@ -408,12 +443,12 @@ export default function LandingPage() {
                     />
                   </svg>
                   <span className="hero-card__ring-text">
-                    {statsLoading ? "…" : `${heroStats.capacityPercent}%`}
+                    {statsLoading ? "..." : `${heroStats.capacityPercent}%`}
                   </span>
                 </div>
               </div>
               <p className="hero-card__sub hero-card__sub--capacity">
-                of {statsLoading ? "…" : heroStats.safeCapacityKw} kW safe capacity
+                of {statsLoading ? "..." : heroStats.safeCapacityKw} kW safe capacity
               </p>
               <div className="hero-card__bar">
                 <div
@@ -432,7 +467,7 @@ export default function LandingPage() {
                 <p className="hero-card__label">Active sessions</p>
                 <div className="hero-card__nums">
                   <span className="hero-card__value">
-                    {statsLoading ? "…" : heroStats.sessionCount}
+                    {statsLoading ? "..." : heroStats.sessionCount}
                   </span>
                 </div>
                 <p className="hero-card__delta">
@@ -445,7 +480,7 @@ export default function LandingPage() {
               <div>
                 <p className="hero-card__label">Peak reduction</p>
                 <span className="hero-card__value hero-card__value--green">
-                  {statsLoading ? "…" : `${peakReductionPercent}%`}
+                  {statsLoading ? "..." : `${peakReductionPercent}%`}
                 </span>
                 <p className="hero-card__sub">vs unmanaged charging</p>
               </div>
@@ -462,8 +497,7 @@ export default function LandingPage() {
           <SectionHead
             chip="Challenge"
             title="Why unmanaged charging is risky in high-rise apartments"
-            titleVi="Vì sao sạc EV không kiểm soát gây quá tải vào giờ cao điểm"
-            subtitle="Evening peak (18:00–22:00) is when unmanaged charging most often exceeds safe capacity."
+            subtitle="Evening peak (18:00-22:00) is when unmanaged charging most often exceeds safe capacity."
             centered
           />
           <div className="lp-challenge-showcase">
@@ -485,14 +519,14 @@ export default function LandingPage() {
                   <p className="lp-challenge-meter__eyebrow">Evening peak scenario</p>
                   <h3 className="lp-challenge-meter__title">Load vs safe capacity</h3>
                 </div>
-                <span className="lp-challenge-meter__window">18:00–22:00</span>
+                <span className="lp-challenge-meter__window">18:00-22:00</span>
               </div>
 
               <div className="lp-challenge-meter__stats">
                 <div className="lp-challenge-meter__stat lp-challenge-meter__stat--peak">
                   <span className="lp-challenge-meter__stat-label">Unmanaged peak</span>
                   <strong>
-                    {statsLoading ? "…" : peakBeforeKw}
+                    {statsLoading ? "..." : peakBeforeKw}
                     <small>kW</small>
                   </strong>
                 </div>
@@ -500,7 +534,7 @@ export default function LandingPage() {
                 <div className="lp-challenge-meter__stat lp-challenge-meter__stat--safe">
                   <span className="lp-challenge-meter__stat-label">Safe limit</span>
                   <strong>
-                    {statsLoading ? "…" : heroStats.safeCapacityKw}
+                    {statsLoading ? "..." : heroStats.safeCapacityKw}
                     <small>kW</small>
                   </strong>
                 </div>
@@ -536,7 +570,7 @@ export default function LandingPage() {
               <div className="lp-challenge-meter__foot">
                 <p className="lp-challenge-meter__caption">
                   {statsLoading
-                    ? "Loading peak scenario…"
+                    ? "Loading peak scenario..."
                     : `${peakBeforeKw} kW total demand exceeds ${heroStats.safeCapacityKw} kW safe capacity by ${Math.max(0, peakBeforeKw - heroStats.safeCapacityKw)} kW`}
                 </p>
                 {!statsLoading && peakBeforeKw > heroStats.safeCapacityKw ? (
@@ -569,10 +603,9 @@ export default function LandingPage() {
         <SectionHead
           chip="Results"
           title="Before vs after smart allocation"
-          titleVi="So sánh đỉnh tải trước và sau khi VerdeWatt điều phối"
           subtitle={
             apiOnline
-              ? "Live optimization results for your building’s evening peak window."
+              ? "Live optimization results for your building's evening peak window."
               : "Connect your building to see personalized load and allocation results."
           }
           centered
@@ -611,8 +644,7 @@ export default function LandingPage() {
             <SectionHead
               chip="How it works"
               title="A clear workflow for your operations team"
-              titleVi="Quy trình vận hành rõ ràng cho ban quản lý"
-              subtitle="Forecast → Schedule → Optimize → Operate — the same flow your team uses every day."
+              subtitle="Forecast -> Schedule -> Optimize -> Operate - the same flow your team uses every day."
               centered
             />
             <ol className="lp-steps lp-steps--stacked">
@@ -667,7 +699,7 @@ export default function LandingPage() {
         <div className="lp-quote-band">
           <p className="lp-quote-band__text">
             One platform for forecasting, smart scheduling, cost visibility, and
-            security monitoring — built for high-rise properties.
+            security monitoring - built for high-rise properties.
           </p>
         </div>
         </div>
@@ -691,20 +723,18 @@ export default function LandingPage() {
             <div className="lp-metric-band__head">
               <p className="public-chip public-chip--light">Impact</p>
               <h2>Practical KPIs for operators and ESG reporting</h2>
-              <p className="lp-section-head__vi lp-metric-band__vi">
-                Theo dõi tiết kiệm năng lượng và tác động môi trường
-              </p>
               <p className="lp-metric-band__sub">
                 {apiOnline
-                  ? "Updated from your building’s latest charging and optimization data."
+                  ? "Updated from your building's latest charging and optimization data."
                   : "Estimated outcomes when charging is coordinated vs unmanaged."}
               </p>
+              <p className="lp-metric-band__source">{dataSourceLabel}</p>
             </div>
             <div className="lp-card-grid lp-card-grid--3 lp-metric-grid">
               {impactMetrics.map((metric) => (
                 <article key={metric.label} className="lp-card lp-metric-card">
                   <p>{metric.label}</p>
-                  <strong>{metric.value}</strong>
+                  <strong>{metric.value || "—"}</strong>
                 </article>
               ))}
             </div>
@@ -717,7 +747,6 @@ export default function LandingPage() {
         <SectionHead
           chip="Plans"
           title="Choose the experience that fits your role"
-          titleVi="Chọn trải nghiệm phù hợp với bạn"
           subtitle="Residents, building operators, and portfolio teams each get tools tailored to their needs."
           centered
         />
@@ -732,7 +761,7 @@ export default function LandingPage() {
             height={500}
           />
           <figcaption className="lp-plans-band__caption">
-            From a single tower to multi-site portfolios — one orchestration platform.
+            From a single tower to multi-site portfolios - one orchestration platform.
           </figcaption>
         </figure>
         <div className="lp-card-grid lp-card-grid--3 lp-plans-grid">
@@ -787,7 +816,6 @@ export default function LandingPage() {
         <SectionHead
           chip="Security"
           title="Rule-based monitoring for safer EV infrastructure"
-          titleVi="Giám sát theo quy tắc — không dùng ML hộp đen"
           subtitle="Three explainable anomaly rules with severity and suggested operator actions."
           centered
         />
@@ -834,11 +862,10 @@ export default function LandingPage() {
 
       <div className="lp-trust lp-reveal">
         <div className="lp-section__inner">
-        <p className="lp-trust__label">Why buildings choose VerdeWatt</p>
+        <p className="lp-trust__label">{dataSourceLabel}</p>
         <div className="lp-card-grid lp-card-grid--4 lp-trust-logos">
-          {trustMetrics.map((metric) => (
+          {liveStatusPills.map((metric) => (
             <div key={metric.label} className="lp-card lp-trust-partner">
-              <span className="lp-trust-partner__mark">{metric.abbr}</span>
               <span className="lp-trust-logo">{metric.label}</span>
               <strong className="lp-trust-metric">{metric.value}</strong>
             </div>
@@ -851,9 +878,6 @@ export default function LandingPage() {
         <div className="lp-cta__inner">
           <p className="public-chip">Get started</p>
           <h2>Ready to bring smarter EV charging to your building?</h2>
-          <p className="lp-section-head__vi">
-            Sẵn sàng triển khai sạc EV thông minh cho tòa nhà của bạn?
-          </p>
           <p>
             Talk to our team about a pilot, or sign in if your property already
             uses VerdeWatt.
@@ -898,3 +922,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

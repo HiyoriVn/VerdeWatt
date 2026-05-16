@@ -3370,3 +3370,326 @@
     max-width: none;
   }
 }
+
+/* =========================================================
+   Rescue Local UI polish overrides
+========================================================= */
+.public-flow .lp-container {
+  width: 100%;
+  max-width: min(1560px, 100%);
+  margin: 0 auto;
+  padding-inline: clamp(16px, 2.8vw, 44px);
+  box-sizing: border-box;
+}
+
+.public-flow .main-content:has(.landing-page),
+.public-flow .main-content:has(.portal-page),
+.public-flow .main-content:has(.staff-login-page) {
+  max-width: 1640px;
+  padding-inline: clamp(18px, 3.2vw, 56px);
+}
+
+.public-flow .landing-page.public-page {
+  --lp-content-max: min(1380px, 100%);
+  --lp-content-wide: min(1520px, 100%);
+  --lp-section-pad: 64px;
+}
+
+.public-flow .landing-page .lp-section__inner {
+  padding-inline: clamp(16px, 2.4vw, 36px);
+}
+
+.public-flow .landing-page .lp-cta__inner {
+  max-width: min(1480px, 100%);
+  padding-inline: clamp(16px, 3vw, 40px);
+}
+
+.public-flow .landing-page .lp-footer {
+  padding-inline: clamp(16px, 2.8vw, 36px);
+}
+
+.public-flow .landing-page .lp-footer__inner {
+  max-width: min(1480px, 100%);
+  margin-inline: auto;
+}
+
+.public-flow .landing-page .public-header {
+  margin-inline: auto;
+}
+
+.public-flow .public-brand .lp-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.public-flow .public-brand-logo {
+  max-height: 34px;
+  max-width: 132px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.public-flow .public-nav-mobile-actions {
+  display: none;
+}
+
+.public-flow .landing-page .hero-inner {
+  max-width: min(1480px, 100%);
+  padding-inline: clamp(18px, 3vw, 52px);
+}
+
+.public-flow .lp-live-source {
+  display: inline-flex;
+  width: fit-content;
+  margin: 2px 0 0;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid #d4e8a8;
+  background: #eef9d6;
+  color: #2f5f12;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.public-flow .lp-live-pills {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 640px;
+}
+
+.public-flow .lp-live-pill {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #d8e3cb;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.public-flow .lp-live-pill__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4f5c44;
+}
+
+.public-flow .lp-live-pill__value {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1b2815;
+}
+
+.public-flow .landing-page > section#impact.lp-section--flush {
+  margin: 0;
+  width: auto;
+  max-width: none;
+  padding: clamp(34px, 4vw, 56px) 0;
+}
+
+.public-flow .landing-page #impact .lp-metric-band {
+  margin: 0 auto;
+  max-width: min(1480px, 100%);
+  border-radius: 28px;
+  border: 1px solid rgba(18, 27, 16, 0.1);
+}
+
+.public-flow .landing-page #impact .lp-metric-band__inner {
+  padding: clamp(26px, 3vw, 44px);
+}
+
+.public-flow .landing-page .lp-metric-band__source {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #d6efac;
+}
+
+.public-flow .landing-page .lp-metric-card {
+  background: rgba(245, 250, 236, 0.94);
+  border-color: rgba(157, 185, 117, 0.55);
+}
+
+.public-flow .landing-page .lp-metric-card p {
+  color: #3e4a33;
+}
+
+.public-flow .landing-page .lp-metric-card strong {
+  color: #1d2a16;
+}
+
+.public-flow .lp-trust {
+  padding-block: 24px;
+}
+
+.public-flow .lp-trust-logos {
+  width: min(1120px, 100%);
+  gap: 12px;
+}
+
+.public-flow .lp-trust-partner {
+  min-height: 72px;
+  padding: 12px;
+  gap: 6px;
+  border-radius: 14px;
+}
+
+.public-flow .lp-trust-logo {
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #5a684f;
+}
+
+.public-flow .lp-trust-metric {
+  margin: 0;
+  font-size: 17px;
+}
+
+.public-flow .portal-page {
+  max-width: 100%;
+  gap: 24px;
+}
+
+.public-flow .portal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.public-flow .portal-hero--nature {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid #d9e4cb;
+  min-height: 260px;
+}
+
+.public-flow .portal-hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 44%;
+}
+
+.public-flow .portal-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    rgba(248, 250, 244, 0.94) 2%,
+    rgba(248, 250, 244, 0.78) 35%,
+    rgba(248, 250, 244, 0.62) 58%,
+    rgba(248, 250, 244, 0.74) 100%
+  );
+}
+
+.public-flow .portal-hero__content {
+  position: relative;
+  z-index: 1;
+  padding: clamp(20px, 2.8vw, 34px);
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.public-flow .portal-page .public-panel {
+  border: 1px solid #dbe6cf;
+  box-shadow: 0 10px 30px rgba(22, 35, 18, 0.07);
+}
+
+.public-flow .portal-result-grid {
+  gap: 12px;
+}
+
+@media (max-width: 1120px) {
+  .public-flow .landing-page .public-header {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand toggle"
+      "nav nav";
+    row-gap: 10px;
+  }
+
+  .public-flow .landing-page .public-header-actions {
+    display: none;
+  }
+
+  .public-flow .landing-page .lp-nav-toggle {
+    justify-self: end;
+    grid-area: toggle;
+  }
+
+  .public-flow .landing-page .public-nav {
+    top: 78px;
+    left: clamp(12px, 2vw, 20px);
+    right: clamp(12px, 2vw, 20px);
+  }
+
+  .public-flow .public-nav-mobile-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px solid #e2ead8;
+  }
+
+  .public-flow .public-nav-mobile-actions .public-button {
+    width: 100%;
+    justify-content: center;
+    height: 38px;
+  }
+}
+
+@media (max-width: 760px) {
+  .public-flow .main-content:has(.landing-page),
+  .public-flow .main-content:has(.portal-page),
+  .public-flow .main-content:has(.staff-login-page) {
+    padding-inline: 16px;
+  }
+
+  .public-flow .landing-page.public-page {
+    --lp-section-pad: 40px;
+  }
+
+  .public-flow .lp-container {
+    padding-inline: 16px;
+  }
+
+  .public-flow .landing-page .lp-section__inner {
+    padding-inline: 16px;
+  }
+
+  .public-flow .lp-live-pills {
+    grid-template-columns: 1fr;
+  }
+
+  .public-flow .landing-page #impact .lp-metric-band {
+    border-radius: 18px;
+  }
+
+  .public-flow .landing-page #impact .lp-metric-band__inner {
+    padding: 20px 16px;
+  }
+
+  .public-flow .portal-hero--nature {
+    border-radius: 18px;
+    min-height: 230px;
+  }
+
+  .public-flow .portal-tabs {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .public-flow .portal-tab-btn {
+    width: 100%;
+  }
+}

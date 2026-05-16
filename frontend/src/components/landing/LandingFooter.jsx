@@ -17,7 +17,7 @@ export default function LandingFooter({
     <footer className="lp-footer">
       <div className="lp-footer__inner">
         <div className="lp-footer__brand">
-          <span className="public-brand-mark">VW</span>
+          <BrandIdentity showText={false} />
           <div>
             <strong>VerdeWatt</strong>
             <p>AI-powered EV charging for high-rise buildings.</p>
@@ -67,3 +67,4 @@ export default function LandingFooter({
     </footer>
   );
 }
+import BrandIdentity from "./BrandIdentity";

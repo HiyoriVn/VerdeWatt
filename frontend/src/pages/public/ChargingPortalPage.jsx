@@ -5,6 +5,7 @@ import {
   getVehicle,
   submitChargingRequest,
 } from "../../services/api";
+import heroImage from "../../assets/landingpage/unname2.png";
 
 const INITIAL_FORM = {
   vehicle_id: "EV_001",
@@ -102,25 +103,38 @@ export default function ChargingPortalPage() {
 
   return (
     <div className="public-page portal-page">
-      <section className="portal-hero">
-        <div>
-          <p className="public-chip">Resident portal</p>
-          <h1>Check EV status or submit a charging request.</h1>
-          <p>
-            Form-first flow for residents and guest drivers, with clear
-            recommendations from VerdeWatt scheduling logic.
-          </p>
-        </div>
+      <div className="lp-container">
+      <section className="portal-hero portal-hero--nature">
+        <img
+          src={heroImage}
+          alt=""
+          className="portal-hero__bg"
+          aria-hidden="true"
+          loading="eager"
+          decoding="async"
+        />
+        <div className="portal-hero__overlay" />
+        <div className="portal-hero__content">
+          <div>
+            <p className="public-chip">Resident portal</p>
+            <h1>Check EV status or submit a charging request.</h1>
+            <p>
+              Form-first flow for residents and guest drivers, with clear
+              recommendations from VerdeWatt scheduling logic.
+            </p>
+          </div>
 
-        <button
-          type="button"
-          className="public-button public-button-ghost"
-          onClick={() => navigate("/")}
-        >
-          Back to home
-        </button>
+          <button
+            type="button"
+            className="public-button public-button-ghost"
+            onClick={() => navigate("/")}
+          >
+            Back to home
+          </button>
+        </div>
       </section>
 
+      <div className="portal-content">
       <section className="portal-tabs" aria-label="Portal mode">
         <button
           type="button"
@@ -396,6 +410,8 @@ export default function ChargingPortalPage() {
           </button>
         </section>
       )}
+      </div>
+      </div>
     </div>
   );
 }
