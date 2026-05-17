@@ -53,7 +53,7 @@ export default function LandingFooter({
           <button
             type="button"
             className="public-button public-button-primary"
-            onClick={() => onNavigate("/login")}
+            onClick={() => onNavigate("/portal?tab=staff")}
           >
             Operator sign in
           </button>

@@ -10,7 +10,7 @@ import heroImage from "../../assets/landingpage/screen7.png";
 import challengeImage from "../../assets/landingpage/screen1.png";
 import workflowImage from "../../assets/landingpage/screen4.png";
 import impactImage from "../../assets/landingpage/screen6.png";
-import securityImage from "../../assets/landingpage/screen3.png";
+
 
 const NAV_LINKS = [
   { id: "problem", label: "Challenge" },
@@ -158,43 +158,68 @@ export default function LandingPage() {
 
     revealElements.forEach((element) => revealObserver?.observe(element));
 
-    const spySections = SCROLL_SPY_IDS.map((id) =>
-      document.getElementById(id)
-    ).filter(Boolean);
+    let rafId = 0;
+    let lastActive = "top";
 
-    const spyObserver =
-      spySections.length > 0
-        ? new IntersectionObserver(
-          (entries) => {
-            const visible = entries
-              .filter((entry) => entry.isIntersecting)
-              .sort(
-                (a, b) => b.intersectionRatio - a.intersectionRatio
-              );
+    function updateActiveSpy() {
+      rafId = 0;
+      const anchor = window.innerHeight * 0.3;
 
-            if (visible[0]?.target?.id) {
-              setActiveSection(visible[0].target.id);
-            }
-          },
-          { threshold: [0.2, 0.45, 0.6], rootMargin: "-20% 0px -55% 0px" }
-        )
-        : null;
-
-    spySections.forEach((section) => spyObserver?.observe(section));
-
-    function onScrollTop() {
       if (window.scrollY < 120) {
-        setActiveSection("top");
+        if (lastActive !== "top") {
+          lastActive = "top";
+          setActiveSection("top");
+        }
+        return;
+      }
+
+      const nearBottom =
+        window.innerHeight + window.scrollY >= document.body.scrollHeight - 100;
+
+      if (nearBottom) {
+        const lastId = SCROLL_SPY_IDS[SCROLL_SPY_IDS.length - 1];
+        if (lastActive !== lastId) {
+          lastActive = lastId;
+          setActiveSection(lastId);
+        }
+        return;
+      }
+
+      let best = null;
+      let bestDist = Infinity;
+
+      for (const id of SCROLL_SPY_IDS) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.top > window.innerHeight) continue;
+        if (rect.bottom < 0) continue;
+        const dist = Math.abs(rect.top - anchor);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = id;
+        }
+      }
+
+      if (best && best !== lastActive) {
+        lastActive = best;
+        setActiveSection(best);
       }
     }
 
-    window.addEventListener("scroll", onScrollTop, { passive: true });
-    onScrollTop();
+    function onScroll() {
+      if (!rafId) {
+        rafId = requestAnimationFrame(updateActiveSpy);
+      }
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    updateActiveSpy();
 
     return () => {
       revealObserver?.disconnect();
-      spyObserver?.disconnect();
-      window.removeEventListener("scroll", onScrollTop);
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", onScroll);
       resetAppMeta();
     };
   }, []);
@@ -214,7 +239,7 @@ export default function LandingPage() {
   }
 
   function goToOperatorSignIn() {
-    navigate("/login");
+    navigate("/portal?tab=staff");
   }
 
   return (
@@ -300,6 +325,8 @@ export default function LandingPage() {
             fetchPriority="high"
             loading="eager"
             decoding="async"
+            width={1672}
+            height={941}
           />
           <div className="hero-bg-fade" />
         </div>
@@ -616,10 +643,10 @@ export default function LandingPage() {
           <div className="lp-challenge-risks">
             {PROBLEM_CARDS.map((card, index) => (
               <article key={card.title} className="lp-card lp-challenge-risk">
-                <span className="lp-challenge-risk__index" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <p className="public-tag">{card.tag}</p>
+                <div className="lp-challenge-risk__header">
+                  <span className="lp-challenge-risk__num">{String(index + 1).padStart(2, "0")}</span>
+                  <span className="public-tag">{card.tag}</span>
+                </div>
                 <h3>{card.title}</h3>
                 <p className="lp-card__text">{card.text}</p>
               </article>
@@ -656,7 +683,7 @@ export default function LandingPage() {
               type="button"
               className="public-button public-button-primary"
               onClick={() =>
-                navigate("/login?redirect=%2Fdashboard%2Fallocation")
+                navigate("/portal?tab=staff")
               }
             >
               Open allocation view
@@ -786,44 +813,26 @@ export default function LandingPage() {
             subtitle="Three explainable anomaly rules with severity and suggested operator actions."
             centered
           />
-          <div className="lp-security-layout">
-            <div className="lp-security-layout__media">
-              <img
-                src={securityImage}
-                alt="Sustainable urban EV charging infrastructure sketch"
-                className="lp-split__img lp-split__img--focus-security"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div className="lp-card-grid lp-card-grid--3">
-              {SECURITY_CARDS.map((card) => {
-                const borderColor =
-                  card.severity === "High" ? "#e07a5f" :
-                    card.severity === "Medium" ? "#f0b429" : "#7ab832";
-                return (
-                  <article
-                    key={card.title}
-                    className="lp-card lp-alert-card"
-                    style={{ borderLeft: `3px solid ${borderColor}` }}
-                  >
-                    <div className="lp-alert-card__head">
-                      <span
-                        className={`lp-severity lp-severity--${card.severity.toLowerCase()}`}
-                      >
-                        {card.severity}
-                      </span>
-                      <h3>{card.title}</h3>
-                    </div>
-                    <p className="lp-card__text">{card.text}</p>
-                    <p className="lp-alert-card__action">
-                      <strong>Suggested:</strong> {card.action}
-                    </p>
-                  </article>
-                );
-              })}
-            </div>
+
+          <div className="lp-security-grid">
+            {SECURITY_CARDS.map((card, i) => (
+              <article key={card.title} className="lp-sec-card">
+                <div className="lp-sec-card__header">
+                  <span className="lp-sec-card__num">{String(i + 1).padStart(2, "0")}</span>
+                  <span className={`lp-sec-card__sev lp-sec-card__sev--${card.severity.toLowerCase()}`}>
+                    {card.severity}
+                  </span>
+                </div>
+                <h3 className="lp-sec-card__title">{card.title}</h3>
+                <p className="lp-sec-card__desc">{card.text}</p>
+                <div className="lp-sec-card__footer">
+                  <span className="lp-sec-card__action-label">Suggested action</span>
+                  <p className="lp-sec-card__action">{card.action}</p>
+                </div>
+              </article>
+            ))}
           </div>
+
           <div className="lp-section-actions lp-section-actions--center">
             <button
               type="button"

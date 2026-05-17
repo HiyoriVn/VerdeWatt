@@ -1,64 +1,78 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Eye, EyeOff, ChevronLeft, ChevronRight, Home, ShieldAlert } from "lucide-react";
 import {
   getVehicle,
   submitChargingRequest,
 } from "../../services/api";
-
-const INITIAL_FORM = {
-  vehicle_id: "EV_001",
-  current_soc: 25,
-  target_soc: 80,
-  battery_kwh: 60,
-  deadline_hour: 7,
-  preference: "balanced",
-};
+import screen1Image from "../../assets/landingpage/screen1.png";
 
 function formatVnd(value) {
   const amount = Number(value);
-
   if (!Number.isFinite(amount)) {
     return "N/A";
   }
-
   return `${amount.toLocaleString("vi-VN")} VND`;
 }
 
 function formatHour(value) {
   const hour = Number(value);
-
   if (!Number.isFinite(hour)) {
     return "N/A";
   }
-
   return `${hour}:00`;
 }
 
-export default function ChargingPortalPage() {
+export default function ChargingPortalPage({ onLoginSuccess }) {
   const navigate = useNavigate();
-  const [portalTab, setPortalTab] = useState("guest");
+  const [searchParams] = useSearchParams();
+  const initialTab = ["register", "status", "staff"].includes(searchParams.get("tab"))
+    ? searchParams.get("tab")
+    : "register";
+  const [portalTab, setPortalTab] = useState(initialTab);
 
+  // Input states
   const [vehicleId, setVehicleId] = useState("EV_001");
   const [vehicleResult, setVehicleResult] = useState(null);
   const [vehicleError, setVehicleError] = useState("");
   const [vehicleLoading, setVehicleLoading] = useState(false);
 
-  const [form, setForm] = useState(INITIAL_FORM);
+  const [form, setForm] = useState({
+    vehicle_id: "",
+    current_soc: "",
+    target_soc: "",
+    battery_kwh: "",
+    deadline_hour: "",
+    preference: "balanced"
+  });
   const [requestResult, setRequestResult] = useState(null);
   const [requestError, setRequestError] = useState("");
-  const [requestLoading, setRequestLoading] =
-    useState(false);
+  const [requestLoading, setRequestLoading] = useState(false);
+
+  // Staff login states
+  const [staffForm, setStaffForm] = useState({
+    email: "",
+    password: "",
+    buildingCode: "VDW_TOWER_01",
+  });
+  const [showPassword, setShowPassword] = useState(false);
 
   function handleInputChange(event) {
     const { name, value } = event.target;
-
     setForm((current) => ({
       ...current,
       [name]:
         name === "vehicle_id" || name === "preference"
           ? value
-          : Number(value),
+          : value === "" ? "" : Number(value),
+    }));
+  }
+
+  function handleStaffInputChange(event) {
+    const { name, value } = event.target;
+    setStaffForm((current) => ({
+      ...current,
+      [name]: value,
     }));
   }
 
@@ -72,10 +86,9 @@ export default function ChargingPortalPage() {
       const payload = await getVehicle(vehicleId.trim());
       setVehicleResult(payload);
     } catch (error) {
-      const message =
-        error?.message ||
-        "Unable to check vehicle status right now. Please try again.";
-      setVehicleError(message);
+      setVehicleError(
+        error?.message || "Unable to check vehicle status right now."
+      );
     } finally {
       setVehicleLoading(false);
     }
@@ -92,310 +105,352 @@ export default function ChargingPortalPage() {
       setRequestResult(payload);
     } catch (error) {
       setRequestError(
-        error?.message ||
-          "Unable to submit charging request. Please try again."
+        error?.message || "Unable to submit charging request. Please try again."
       );
     } finally {
       setRequestLoading(false);
     }
   }
 
+  function handleStaffSubmit(event) {
+    event.preventDefault();
+    if (!staffForm.email.trim() || !staffForm.password.trim()) {
+      return;
+    }
+    const profile = {
+      email: staffForm.email.trim(),
+      buildingCode: staffForm.buildingCode.trim(),
+      role: "Building Manager",
+    };
+    if (onLoginSuccess) {
+      onLoginSuccess(profile);
+    }
+    navigate("/dashboard");
+  }
+
   return (
     <div className="public-page portal-page">
-      <section className="portal-hero">
-        <div>
-          <p className="public-chip">Resident portal</p>
-          <h1>Check EV status or submit a charging request.</h1>
-          <p>
-            Form-first flow for residents and guest drivers, with clear
-            recommendations from VerdeWatt scheduling logic.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          className="public-button public-button-ghost"
-          onClick={() => navigate("/")}
-        >
-          Back to home
-        </button>
-      </section>
-
-      <section className="portal-tabs" aria-label="Portal mode">
-        <button
-          type="button"
-          className={`portal-tab-btn ${
-            portalTab === "guest"
-              ? "portal-tab-btn-active"
-              : ""
-          }`}
-          onClick={() => setPortalTab("guest")}
-        >
-          Guest Charging
-        </button>
-
-        <button
-          type="button"
-          className={`portal-tab-btn ${
-            portalTab === "staff"
-              ? "portal-tab-btn-active"
-              : ""
-          }`}
-          onClick={() => setPortalTab("staff")}
-        >
-          Staff Access
-        </button>
-      </section>
-
-      {portalTab === "guest" ? (
-        <div className="portal-grid">
-          <section className="public-panel">
-            <div className="section-title-wrap">
-              <h3>Register Charging Request</h3>
-              <p>
-                Submit your charging needs and receive a safe schedule
-                recommendation.
-              </p>
+      <div className="portal-card">
+        {/* Left Side: Dynamic Forms */}
+        <div className="portal-card-left">
+          <div>
+            {/* Header Title based on Active Tab */}
+            <div className="portal-header">
+              {portalTab === "register" && (
+                <>
+                  <h1 className="portal-header-title">Register Charging</h1>
+                  <p className="portal-header-subtitle">Let's schedule a smart charging session for your EV</p>
+                </>
+              )}
+              {portalTab === "status" && (
+                <>
+                  <h1 className="portal-header-title">Check EV Status</h1>
+                  <p className="portal-header-subtitle">Track your real-time charging status & estimated outcomes</p>
+                </>
+              )}
+              {portalTab === "staff" && (
+                <>
+                  <h1 className="portal-header-title">Operator Access</h1>
+                  <p className="portal-header-subtitle">Access your staff dashboard for operations monitoring</p>
+                </>
+              )}
             </div>
 
-            <form
-              onSubmit={handleChargingRequest}
-              className="portal-form-grid"
-            >
-              <label>
-                Vehicle ID
-                <input
-                  className="vehicle-input"
-                  name="vehicle_id"
-                  value={form.vehicle_id}
-                  onChange={handleInputChange}
-                  required
-                />
-              </label>
+            {/* Custom Pill Tabs */}
+            <div className="portal-pill-tabs">
+              <button
+                type="button"
+                className={`portal-pill-tab ${portalTab === "register" ? "active" : ""}`}
+                onClick={() => setPortalTab("register")}
+              >
+                Register
+              </button>
+              <button
+                type="button"
+                className={`portal-pill-tab ${portalTab === "status" ? "active" : ""}`}
+                onClick={() => setPortalTab("status")}
+              >
+                Check Status
+              </button>
+              <button
+                type="button"
+                className={`portal-pill-tab ${portalTab === "staff" ? "active" : ""}`}
+                onClick={() => setPortalTab("staff")}
+              >
+                Operator Login
+              </button>
+            </div>
 
-              <label>
-                Current SOC (%)
-                <input
-                  className="vehicle-input"
-                  type="number"
-                  min="0"
-                  max="100"
-                  name="current_soc"
-                  value={form.current_soc}
-                  onChange={handleInputChange}
-                  required
-                />
-              </label>
+            {/* Form rendering */}
+            {portalTab === "register" && (
+              <form onSubmit={handleChargingRequest} className="portal-custom-form">
+                <div className="portal-input-group">
+                  <span className="portal-input-label">Vehicle ID</span>
+                  <input
+                    className="portal-input"
+                    name="vehicle_id"
+                    value={form.vehicle_id}
+                    onChange={handleInputChange}
+                    placeholder="e.g. EV_001"
+                    required
+                  />
+                </div>
 
-              <label>
-                Target SOC (%)
-                <input
-                  className="vehicle-input"
-                  type="number"
-                  min="0"
-                  max="100"
-                  name="target_soc"
-                  value={form.target_soc}
-                  onChange={handleInputChange}
-                  required
-                />
-              </label>
+                <div className="portal-form-row">
+                  <div className="portal-input-group">
+                    <span className="portal-input-label">Current SOC (%)</span>
+                    <input
+                      className="portal-input"
+                      type="number"
+                      min="0"
+                      max="100"
+                      name="current_soc"
+                      value={form.current_soc}
+                      onChange={handleInputChange}
+                      placeholder="e.g. 20"
+                      required
+                    />
+                  </div>
+                  <div className="portal-input-group">
+                    <span className="portal-input-label">Target SOC (%)</span>
+                    <input
+                      className="portal-input"
+                      type="number"
+                      min="0"
+                      max="100"
+                      name="target_soc"
+                      value={form.target_soc}
+                      onChange={handleInputChange}
+                      placeholder="e.g. 85"
+                      required
+                    />
+                  </div>
+                </div>
 
-              <label>
-                Battery (kWh)
-                <input
-                  className="vehicle-input"
-                  type="number"
-                  min="1"
-                  name="battery_kwh"
-                  value={form.battery_kwh}
-                  onChange={handleInputChange}
-                  required
-                />
-              </label>
+                <div className="portal-form-row">
+                  <div className="portal-input-group">
+                    <span className="portal-input-label">Battery (kWh)</span>
+                    <input
+                      className="portal-input"
+                      type="number"
+                      min="1"
+                      name="battery_kwh"
+                      value={form.battery_kwh}
+                      onChange={handleInputChange}
+                      placeholder="e.g. 75"
+                      required
+                    />
+                  </div>
+                  <div className="portal-input-group">
+                    <span className="portal-input-label">Deadline Hour</span>
+                    <input
+                      className="portal-input"
+                      type="number"
+                      min="0"
+                      max="23"
+                      name="deadline_hour"
+                      value={form.deadline_hour}
+                      onChange={handleInputChange}
+                      placeholder="e.g. 7"
+                      required
+                    />
+                  </div>
+                </div>
 
-              <label>
-                Deadline Hour
-                <input
-                  className="vehicle-input"
-                  type="number"
-                  min="0"
-                  max="23"
-                  name="deadline_hour"
-                  value={form.deadline_hour}
-                  onChange={handleInputChange}
-                  required
-                />
-              </label>
+                <div className="portal-input-group">
+                  <span className="portal-input-label">Preference</span>
+                  <select
+                    className="portal-input"
+                    name="preference"
+                    value={form.preference}
+                    onChange={handleInputChange}
+                  >
+                    <option value="fastest">fastest</option>
+                    <option value="cheapest">cheapest</option>
+                    <option value="balanced">balanced</option>
+                  </select>
+                </div>
 
-              <label>
-                Preference
-                <select
-                  className="vehicle-input"
-                  name="preference"
-                  value={form.preference}
-                  onChange={handleInputChange}
-                >
-                  <option value="fastest">fastest</option>
-                  <option value="cheapest">cheapest</option>
-                  <option value="balanced">balanced</option>
-                </select>
-              </label>
-
-              <div className="portal-form-actions">
                 <button
                   type="submit"
-                  className="vehicle-search-btn"
+                  className="portal-submit-btn"
                   disabled={requestLoading}
                 >
-                  {requestLoading
-                    ? "Submitting..."
-                    : "Submit Request"}
+                  {requestLoading ? "Submitting..." : "Submit Request"}
                 </button>
-              </div>
-            </form>
 
-            {requestError ? (
-              <p className="vehicle-error">{requestError}</p>
-            ) : null}
+                {requestError && <p className="vehicle-error">{requestError}</p>}
 
-            {requestResult ? (
-              <div className="portal-result-grid">
-                <div className="vehicle-info-item">
-                  <span>Status</span>
-                  <strong>{requestResult.status ?? "N/A"}</strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Recommended Action</span>
-                  <strong>
-                    {requestResult.recommended_action ?? "N/A"}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Scheduled Start</span>
-                  <strong>
-                    {formatHour(requestResult.scheduled_start_hour)}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Estimated Completion</span>
-                  <strong>
-                    {formatHour(requestResult.estimated_completion_hour)}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Estimated Cost</span>
-                  <strong>
-                    {formatVnd(requestResult.estimated_cost_vnd)}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Estimated Saving</span>
-                  <strong>
-                    {formatVnd(requestResult.estimated_saving_vnd)}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item portal-result-message">
-                  <span>User Message</span>
-                  <strong>{requestResult.user_message ?? "N/A"}</strong>
-                </div>
-              </div>
-            ) : null}
-          </section>
+                {requestResult && (
+                  <div className="portal-card-results">
+                    <h4 className="portal-results-title">Charging Schedule</h4>
+                    <div className="portal-results-grid">
+                      <div className="portal-result-item">
+                        <span>Status</span>
+                        <strong>{requestResult.status ?? "N/A"}</strong>
+                      </div>
+                      <div className="portal-result-item">
+                        <span>Start Hour</span>
+                        <strong>{formatHour(requestResult.scheduled_start_hour)}</strong>
+                      </div>
+                      <div className="portal-result-item">
+                        <span>Est. Cost</span>
+                        <strong>{formatVnd(requestResult.estimated_cost_vnd)}</strong>
+                      </div>
+                    </div>
+                    <div className="portal-result-action">
+                      <span>Recommended Action</span>
+                      <p>{requestResult.recommended_action ?? "N/A"}</p>
+                    </div>
+                    <div className="portal-result-action">
+                      <span>Summary</span>
+                      <p>{requestResult.user_message ?? "N/A"}</p>
+                    </div>
+                  </div>
+                )}
+              </form>
+            )}
 
-          <section className="public-panel">
-            <div className="section-title-wrap">
-              <h3>Check My Vehicle</h3>
-              <p>
-                Enter your vehicle code to review current status and expected
-                charging outcome.
-              </p>
-            </div>
+            {portalTab === "status" && (
+              <form onSubmit={handleVehicleSearch} className="portal-custom-form">
+                <div className="portal-input-group">
+                  <span className="portal-input-label">Vehicle ID</span>
+                  <input
+                    className="portal-input"
+                    value={vehicleId}
+                    onChange={(event) => setVehicleId(event.target.value)}
+                    placeholder="EV_001"
+                    required
+                  />
+                </div>
 
-            <form
-              className="vehicle-search-bar"
-              onSubmit={handleVehicleSearch}
-            >
-              <input
-                className="vehicle-input"
-                value={vehicleId}
-                onChange={(event) =>
-                  setVehicleId(event.target.value)
-                }
-                placeholder="EV_001"
-                required
-              />
+                <button
+                  type="submit"
+                  className="portal-submit-btn"
+                  disabled={vehicleLoading}
+                >
+                  {vehicleLoading ? "Checking..." : "Check Status"}
+                </button>
 
+                {vehicleError && <p className="vehicle-error">{vehicleError}</p>}
+
+                {vehicleResult && (
+                  <div className="portal-card-results">
+                    <h4 className="portal-results-title">Vehicle Status</h4>
+                    <div className="portal-results-grid">
+                      <div className="portal-result-item">
+                        <span>Status</span>
+                        <strong>{vehicleResult.status ?? "N/A"}</strong>
+                      </div>
+                      <div className="portal-result-item">
+                        <span>Completion</span>
+                        <strong>{formatHour(vehicleResult.estimated_completion_hour)}</strong>
+                      </div>
+                      <div className="portal-result-item">
+                        <span>Cost</span>
+                        <strong>{formatVnd(vehicleResult.estimated_cost_vnd)}</strong>
+                      </div>
+                    </div>
+                    <div className="portal-result-action">
+                      <span>Savings</span>
+                      <p>{formatVnd(vehicleResult.estimated_saving_vnd)}</p>
+                    </div>
+                    <div className="portal-result-action">
+                      <span>Status Message</span>
+                      <p>{vehicleResult.user_message ?? "N/A"}</p>
+                    </div>
+                  </div>
+                )}
+              </form>
+            )}
+
+            {portalTab === "staff" && (
+              <form onSubmit={handleStaffSubmit} className="portal-custom-form">
+                <div className="portal-input-group">
+                  <span className="portal-input-label">Work Email</span>
+                  <input
+                    className="portal-input"
+                    type="email"
+                    name="email"
+                    value={staffForm.email}
+                    onChange={handleStaffInputChange}
+                    placeholder="you@building-management.vn"
+                    autoComplete="username"
+                    required
+                  />
+                </div>
+
+                <div className="portal-input-group">
+                  <span className="portal-input-label">Password</span>
+                  <div className="portal-input-password-wrapper">
+                    <input
+                      className="portal-input"
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={staffForm.password}
+                      onChange={handleStaffInputChange}
+                      placeholder="Enter your password"
+                      autoComplete="current-password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="portal-password-toggle"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="portal-input-group">
+                  <span className="portal-input-label">Building Code</span>
+                  <input
+                    className="portal-input"
+                    name="buildingCode"
+                    value={staffForm.buildingCode}
+                    onChange={handleStaffInputChange}
+                    placeholder="e.g. VDW_TOWER_01"
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="portal-submit-btn">
+                  Sign in to Dashboard
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Back link */}
+          <div>
+            <p className="portal-footer-link">
+              Need assistance?{" "}
               <button
-                type="submit"
-                className="vehicle-search-btn"
-                disabled={vehicleLoading}
+                type="button"
+                style={{ background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer", color: "#4a8c30", fontWeight: "bold", textDecoration: "underline" }}
+                onClick={() => navigate("/")}
               >
-                {vehicleLoading
-                  ? "Checking..."
-                  : "Check Status"}
+                Back to home
               </button>
-            </form>
-
-            {vehicleError ? (
-              <p className="vehicle-error">{vehicleError}</p>
-            ) : null}
-
-            {vehicleResult ? (
-              <div className="portal-result-grid">
-                <div className="vehicle-info-item">
-                  <span>Status</span>
-                  <strong>{vehicleResult.status ?? "N/A"}</strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Recommended Action</span>
-                  <strong>
-                    {vehicleResult.recommended_action ?? "N/A"}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Estimated Completion</span>
-                  <strong>
-                    {formatHour(vehicleResult.estimated_completion_hour)}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Estimated Cost</span>
-                  <strong>
-                    {formatVnd(vehicleResult.estimated_cost_vnd)}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item">
-                  <span>Estimated Saving</span>
-                  <strong>
-                    {formatVnd(vehicleResult.estimated_saving_vnd)}
-                  </strong>
-                </div>
-                <div className="vehicle-info-item portal-result-message">
-                  <span>User Message</span>
-                  <strong>{vehicleResult.user_message ?? "N/A"}</strong>
-                </div>
-              </div>
-            ) : null}
-          </section>
+            </p>
+          </div>
         </div>
-      ) : (
-        <section className="public-panel staff-access-card">
-          <p className="public-chip">Operator access</p>
-          <h3>Staff access for building operations teams</h3>
-          <p className="muted-text">
-            Building managers can continue to the internal dashboard login for
-            demand monitoring, allocation, and security alerts.
-          </p>
-          <button
-            type="button"
-            className="vehicle-search-btn"
-            onClick={() => navigate("/login")}
-          >
-            Go to Staff Login
-          </button>
-        </section>
-      )}
+
+        {/* Right Side: Portrait Image Cover with warm gradient overlay */}
+        <div className="portal-card-right">
+          <img src={screen1Image} alt="VerdeWatt Smart Charging Scene" />
+          <div className="portal-card-right-overlay" />
+          <div className="portal-card-right-controls">
+            <button type="button" className="portal-card-right-btn" aria-label="Previous illustration">
+              <ChevronLeft size={18} />
+            </button>
+            <button type="button" className="portal-card-right-btn" aria-label="Next illustration">
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

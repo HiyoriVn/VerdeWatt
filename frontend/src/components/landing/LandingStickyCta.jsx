@@ -64,7 +64,7 @@ export default function LandingStickyCta({ onScrollTo, onNavigate }) {
             <button
               type="button"
               className="lp-sticky-cta__btn lp-sticky-cta__btn--primary"
-              onClick={() => onNavigate("/login")}
+              onClick={() => onNavigate("/portal?tab=staff")}
             >
               Sign in
             </button>
