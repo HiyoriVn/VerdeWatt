@@ -10,7 +10,6 @@ import heroImage from "../../assets/landingpage/screen7.png";
 import challengeImage from "../../assets/landingpage/screen1.png";
 import workflowImage from "../../assets/landingpage/screen4.png";
 import impactImage from "../../assets/landingpage/screen6.png";
-import plansScaleImage from "../../assets/landingpage/screen5.png";
 import securityImage from "../../assets/landingpage/screen3.png";
 
 const NAV_LINKS = [
@@ -23,49 +22,6 @@ const NAV_LINKS = [
 ];
 
 const SCROLL_SPY_IDS = NAV_LINKS.map((link) => link.id);
-
-const PRODUCT_OFFERINGS = [
-  {
-    name: "Resident portal",
-    role: "For residents",
-    description:
-      "Residents check charging status, submit requests, and see expected completion times.",
-    features: [
-      "Vehicle status lookup",
-      "Charging request in a few taps",
-      "Clear completion guidance",
-    ],
-    path: "/portal",
-    cta: "Go to resident portal",
-  },
-  {
-    name: "Building operations",
-    role: "Most popular",
-    description:
-      "Property teams monitor load, optimize charging, and respond to alerts in one place.",
-    features: [
-      "Load forecast and smart allocation",
-      "Security alert feed",
-      "Billing and sustainability KPIs",
-    ],
-    path: "/login",
-    cta: "Sign in as operator",
-    featured: true,
-  },
-  {
-    name: "Portfolio & enterprise",
-    role: "Multi-site",
-    description:
-      "Property groups planning EV infrastructure across several high-rise buildings.",
-    features: [
-      "Portfolio capacity planning",
-      "Custom tariff assumptions",
-      "ESG and impact reporting",
-    ],
-    contact: true,
-    cta: "Talk to our team",
-  },
-];
 
 const PROBLEM_CARDS = [
   {
