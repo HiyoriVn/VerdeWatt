@@ -10,25 +10,29 @@ import {
 } from "../services/api";
 
 const DEFAULT_IMPACT = {
-  shifted_kwh: 278,
-  co2_saved_kg: 115,
-  estimated_saving_vnd: 1540000,
+  shifted_kwh: null,
+  co2_saved_kg: null,
+  estimated_saving_vnd: null,
 };
 
 const DEFAULT_ALLOCATION = {
-  peak_reduction_percent: 28,
-  peak_before_kw: 512,
-  peak_after_kw: 368,
-  peak_reduction_kw: 144,
-  peak_after_is_safe: true,
-  evs_fully_served: ["EV_001", "EV_002", "EV_003", "EV_004", "EV_005", "EV_006"],
-  evs_partially_served: ["EV_007", "EV_008"],
+  peak_reduction_percent: null,
+  peak_before_kw: null,
+  peak_after_kw: null,
+  peak_reduction_kw: null,
+  peak_after_is_safe: null,
+  evs_fully_served: [],
+  evs_partially_served: [],
   total_load_after_optimization: [],
 };
 
 const DEFAULT_LOAD_ROWS = [];
 
 function formatMetricValue(value, unit) {
+  if (value == null || Number.isNaN(value)) {
+    return "—";
+  }
+
   if (unit === "vnd") {
     return `${Math.round(value).toLocaleString("vi-VN")} VND`;
   }
