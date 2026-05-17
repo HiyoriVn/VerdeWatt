@@ -655,7 +655,9 @@ export default function LandingPage() {
             <button
               type="button"
               className="public-button public-button-primary"
-              onClick={() => navigate("/dashboard/allocation")}
+              onClick={() =>
+                navigate("/login?redirect=%2Fdashboard%2Fallocation")
+              }
             >
               Open allocation view
             </button>
