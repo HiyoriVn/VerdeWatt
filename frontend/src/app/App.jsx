@@ -11,7 +11,6 @@ import {
 import Dashboard from "../pages/staff/Dashboard";
 import LandingPage from "../pages/public/LandingPage";
 import ChargingPortalPage from "../pages/public/ChargingPortalPage";
-import StaffLoginPage from "../pages/public/StaffLoginPage";
 import AppShell from "../components/layout/AppShell";
 
 const DEFAULT_TAB = "dashboard";
@@ -97,7 +96,9 @@ export default function App() {
           path="/portal"
           element={
             <PublicPageLayout>
-              <ChargingPortalPage />
+              <ChargingPortalPage
+                onLoginSuccess={handleStaffLogin}
+              />
             </PublicPageLayout>
           }
         />
@@ -107,11 +108,7 @@ export default function App() {
             isStaffLoggedIn ? (
               <Navigate to="/dashboard" replace />
             ) : (
-              <PublicPageLayout>
-                <StaffLoginPage
-                  onLoginSuccess={handleStaffLogin}
-                />
-              </PublicPageLayout>
+              <Navigate to="/portal?tab=staff" replace />
             )
           }
         />
