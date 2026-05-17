@@ -3,7 +3,6 @@ const FOOTER_LINKS = [
   { id: "results", label: "Results" },
   { id: "how-it-works", label: "How it works" },
   { id: "impact", label: "Impact" },
-  { id: "plans", label: "Plans" },
   { id: "security", label: "Security" },
   { id: "cta", label: "Contact" },
 ];
