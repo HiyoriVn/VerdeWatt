@@ -16,5 +16,6 @@ def parse_cors_origins() -> list[str]:
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://192.168.156.244:5173",
-        "https://verdewatt.onrender.com"
+        "https://verdewatt.onrender.com",
+        "https://verde-watt.vercel.app"
     ]
