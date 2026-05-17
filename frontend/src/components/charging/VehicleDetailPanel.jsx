@@ -40,37 +40,45 @@ function VehicleDetailPanel({ selectedEvId, sessions }) {
         </div>
       </div>
 
-      <div className="vehicle-stats-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-        <div className="card" style={{ padding: '16px' }}>
-          <div className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: 'var(--text-soft)', fontSize: '13px', fontWeight: '500' }}>
-            <Clock size={16} style={{ color: '#3b82f6' }} />
+      <div className="vehicle-stats-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <div className="card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)' }}>
+          <div className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-soft)', fontSize: '15px', fontWeight: '600' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.12)', color: '#3b82f6' }}>
+              <Clock size={22} />
+            </div>
             <span>Deadline</span>
           </div>
-          <strong style={{ fontSize: '20px', fontWeight: '600' }}>{session.deadline_hour}:00</strong>
+          <strong style={{ fontSize: '32px', fontWeight: '700', color: 'var(--text)', lineHeight: '1', letterSpacing: '-0.5px' }}>{session.deadline_hour}:00</strong>
         </div>
 
-        <div className="card" style={{ padding: '16px' }}>
-          <div className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: 'var(--text-soft)', fontSize: '13px', fontWeight: '500' }}>
-            <Battery size={16} style={{ color: '#22c55e' }} />
+        <div className="card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)' }}>
+          <div className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-soft)', fontSize: '15px', fontWeight: '600' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(34, 197, 94, 0.12)', color: '#22c55e' }}>
+              <Battery size={22} />
+            </div>
             <span>Battery</span>
           </div>
-          <strong style={{ fontSize: '20px', fontWeight: '600' }}>{session.battery_kwh}<small style={{ fontSize: '14px', color: 'var(--text-muted)', marginLeft: '2px' }}>kWh</small></strong>
+          <strong style={{ fontSize: '32px', fontWeight: '700', color: 'var(--text)', lineHeight: '1', letterSpacing: '-0.5px' }}>{session.battery_kwh}<small style={{ fontSize: '18px', color: 'var(--text-muted)', marginLeft: '6px', fontWeight: '500' }}>kWh</small></strong>
         </div>
 
-        <div className="card" style={{ padding: '16px' }}>
-          <div className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: 'var(--text-soft)', fontSize: '13px', fontWeight: '500' }}>
-            <BatteryCharging size={16} style={{ color: '#f59e0b' }} />
+        <div className="card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)' }}>
+          <div className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-soft)', fontSize: '15px', fontWeight: '600' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b' }}>
+              <BatteryCharging size={22} />
+            </div>
             <span>SOC Progress</span>
           </div>
-          <strong style={{ fontSize: '20px', fontWeight: '600' }}>{session.current_soc}% &rarr; {session.target_soc}%</strong>
+          <strong style={{ fontSize: '32px', fontWeight: '700', color: 'var(--text)', lineHeight: '1', letterSpacing: '-0.5px' }}>{session.current_soc}% <span style={{color: 'var(--text-muted)', fontWeight: '400', fontSize: '26px', margin: '0 6px'}}>&rarr;</span> {session.target_soc}%</strong>
         </div>
 
-        <div className="card" style={{ padding: '16px' }}>
-          <div className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: 'var(--text-soft)', fontSize: '13px', fontWeight: '500' }}>
-            <Zap size={16} style={{ color: '#a855f7' }} />
+        <div className="card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)' }}>
+          <div className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-soft)', fontSize: '15px', fontWeight: '600' }}>
+             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(168, 85, 247, 0.12)', color: '#a855f7' }}>
+              <Zap size={22} />
+            </div>
             <span>Max Charging</span>
           </div>
-          <strong style={{ fontSize: '20px', fontWeight: '600' }}>{session.max_charging_kw}<small style={{ fontSize: '14px', color: 'var(--text-muted)', marginLeft: '2px' }}>kW</small></strong>
+          <strong style={{ fontSize: '32px', fontWeight: '700', color: 'var(--text)', lineHeight: '1', letterSpacing: '-0.5px' }}>{session.max_charging_kw}<small style={{ fontSize: '18px', color: 'var(--text-muted)', marginLeft: '6px', fontWeight: '500' }}>kW</small></strong>
         </div>
       </div>
     </div>

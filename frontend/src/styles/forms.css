@@ -54,13 +54,15 @@
 }
 
 .public-flow .public-button-ghost {
-  border: 1px solid #ccd5be;
+  border: 1px solid #b5c9a0;
   background: #ffffff;
   color: #2f3924;
+  transition: background 0.18s, border-color 0.18s;
 }
 
 .public-flow .public-button-ghost:hover {
   background: #f1f5e8;
+  border-color: #9ab880;
 }
 
 .public-flow .portal-form-grid {

@@ -1,21 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const DEMO_EMAIL = "admin@verdewatt.vn";
-const DEMO_PASSWORD = "demo123";
-
 const TRUST_POINTS = [
   "Forecast-aware charging allocation for peak windows",
-  "Rule-based safety checks with explainable alerts",
-  "Resident portal + operator dashboard in one workflow",
+  "Rule-based safety checks with clear operator guidance",
+  "Resident portal and operations dashboard in one platform",
 ];
 
 export default function StaffLoginPage({ onLoginSuccess }) {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    email: DEMO_EMAIL,
-    password: DEMO_PASSWORD,
-    buildingCode: "VDW_TOWER_01",
+    email: "",
+    password: "",
+    buildingCode: "",
   });
   const [error, setError] = useState("");
 
@@ -35,7 +32,7 @@ export default function StaffLoginPage({ onLoginSuccess }) {
       !form.password.trim() ||
       !form.buildingCode.trim()
     ) {
-      setError("Please fill all fields.");
+      setError("Please fill in all fields.");
       return;
     }
 
@@ -54,10 +51,10 @@ export default function StaffLoginPage({ onLoginSuccess }) {
       <section className="staff-login-shell">
         <div className="staff-login-copy">
           <p className="public-chip">Operator portal</p>
-          <h1>Building operations login</h1>
+          <h1>Sign in to your building dashboard</h1>
           <p>
-            Access the VerdeWatt staff dashboard to monitor charging sessions,
-            forecasted demand, and operational alerts.
+            Monitor charging sessions, manage peak load, and review security
+            alerts for your property.
           </p>
 
           <ul className="staff-benefits-list">
@@ -71,7 +68,7 @@ export default function StaffLoginPage({ onLoginSuccess }) {
             className="public-button public-button-ghost"
             onClick={() => navigate("/")}
           >
-            Back to Landing
+            Back to home
           </button>
         </div>
 
@@ -79,19 +76,22 @@ export default function StaffLoginPage({ onLoginSuccess }) {
           className="staff-login-form public-panel"
           onSubmit={handleSubmit}
         >
-          <h3>Sign in</h3>
+          <h3>Operator sign in</h3>
           <p className="muted-text">
-            Use your operator account to continue.
+            Use the credentials provided by your property manager or VerdeWatt
+            onboarding team.
           </p>
 
           <label>
-            Staff email
+            Work email
             <input
               className="vehicle-input"
               type="email"
               name="email"
               value={form.email}
               onChange={handleChange}
+              placeholder="you@building-management.vn"
+              autoComplete="username"
               required
             />
           </label>
@@ -104,6 +104,8 @@ export default function StaffLoginPage({ onLoginSuccess }) {
               name="password"
               value={form.password}
               onChange={handleChange}
+              placeholder="Enter your password"
+              autoComplete="current-password"
               required
             />
           </label>
@@ -115,25 +117,22 @@ export default function StaffLoginPage({ onLoginSuccess }) {
               name="buildingCode"
               value={form.buildingCode}
               onChange={handleChange}
+              placeholder="e.g. VDW_TOWER_01"
               required
             />
           </label>
 
-          {error ? (
-            <p className="vehicle-error">{error}</p>
-          ) : null}
+          {error ? <p className="vehicle-error">{error}</p> : null}
 
           <div className="staff-login-actions">
-            <button
-              type="submit"
-              className="vehicle-search-btn"
-            >
-              Enter Dashboard
+            <button type="submit" className="vehicle-search-btn">
+              Sign in
             </button>
           </div>
 
-          <p className="demo-note">
-            Demo credentials: {DEMO_EMAIL} / {DEMO_PASSWORD}
+          <p className="staff-login-help">
+            Need access? Contact your building administrator or{" "}
+            <a href="mailto:hello@verdewatt.com">hello@verdewatt.com</a>.
           </p>
         </form>
       </section>
